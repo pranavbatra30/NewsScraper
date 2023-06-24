@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Professional News Scraper</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #007bff;
+            --hover-color: #0056b3;
+            --background-color: #f5f5f5;
+            --font-color: #212529;
+            --box-shadow: 0px 2px 10px rgba(0,0,0,0.2);
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--background-color);
+            color: var(--font-color);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: auto;
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            font-weight: 500;
+            font-size: 2.5em;
+            color: var(--primary-color);
+        }
+
+        .search-box {
+            width: 100%;
+            max-width: 900px;
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: var(--box-shadow);
+            padding: 5px;
+        }
+
+        .search-box form {
+            display: flex;
+            flex-grow: 1;
+            justify-content: space-between;
+        }
+
+        .search-box input[type="text"] {
+            flex-grow: 2;
+            padding: 5px;
+            font-size: 1em;
+            border: none;
+            outline: none;
+            margin-right: 10px;
+        }
+
+        .search-box select {
+            width: 150px;
+            padding: 10px;
+            font-size: 1em;
+            border: none;
+            outline: none;
+            margin-right: 10px;
+        }
+
+        .search-box input[type="submit"] {
+            width: 100%;
+            max-width: 170px;
+            padding: 5px 20px;
+            font-size: 1em;
+            border: none;
+            background-color: var(--primary-color);
+            color: #fff;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .search-box input[type="submit"]:hover {
+            background-color: var(--hover-color);
+        }
+
+        .news-item {
+            width: calc(100% + 20px);  /* Increase width */
+            max-width: 920px;  /* Increase max-width */
+            background-color: #fff;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            box-shadow: var(--box-shadow);
+            flex: 0 0 calc(33.33% - 20px);
+            margin: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .news-item:hover {
+            transform: scale(1.03);
+            box-shadow: 0px 5px 15px rgba(0,0,0,0.3);
+        }
+
+        .news-item h2 {
+            margin-top: 0;
+            color: var(--primary-color);
+
+        }
+
+        .news-item a {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        .news-item a:hover {
+            color: var(--hover-color);
+        }
+
+        .news-item p {
+            margin-bottom: 0;
+            color: #6c757d;
+
+        }
+
+        .news-item-img {
+            width: 100%;
+            height: 400px; /* Decrease height */
+            object-fit: cover;
+            object-position: center;
+            border-radius: 5px;
+            margin-bottom: 15px;
+        }
+
+        .news-item-source {
+            margin-bottom: 15px;
+        }
+
+        .news-row {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+        }
+
+        @media screen and (max-width: 768px) {
+            .news-item {
+                flex: 0 0 calc(50% - 20px);
+            }
+        }
+
+        @media screen and (max-width: 480px) {
+            .news-item {
+                flex: 0 0 calc(100% - 20px);
+            }
+        }
+
+        .trending-news-item {
+            height: 450px;  /* Decrease height for trending news item */
+        }
+
+        .trending-news-item h2 {
+            font-size: 1.1em;  /* Decrease font size for trending news item title */
+        }
+
+        .trending-news-item p {
+            font-size: 0.9em;  /* Decrease font size for trending news item content */
+        }
+
+        .trending-news-item-img {
+            height: 220px; /* Decrease the height as per your need */
+        }
+
+        .wordcloud-box {
+            background-color: #fff;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            box-shadow: var(--box-shadow);
+        }
+
+    </style>
+
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>News Scraper</h1>
+    </div>
+    <div class="search-box">
+        <form method="POST">
+            <input type="text" name="keyword" placeholder="Enter a keyword..." required>
+            <select name="source">
+                <option value="all">All</option>
+                <option value="www.blackwallstreet-pa.com">Black Wall Street PA</option>
+                <option value="www.pennlive.com">Penn Live</option>
+            </select>
+            <input type="submit" value="Search">
+        </form>
+    </div>
+    {% if wordcloud_filename %}
+    <div class="wordcloud-box">
+        <img src="{{ url_for('static', filename=wordcloud_filename) }}" alt="Word Cloud">
+    </div>
+    {% endif %}
+    {% if not news %}
+    {% if trending_news %}
+    <h2>Trending News</h2>
+    <div class="news-row">
+        {% for item in trending_news %}
+        <div class="news-item trending-news-item">
+            <h2><a href="{{ item['link'] }}">{{ item['title'] }}</a></h2>
+            <p>Published Date: {{ item['published_date'] }}</p>
+            <p>Keywords: {{ item['keywords'] }}</p>
+            <div class="news-item-source">
+                <p>Source: <a href="{{ item['link'] }}">{{ item['source'] }}</a></p>
+            </div>
+            {% if item['image'] %}
+            <img class="news-item-img trending-news-item-img" src="{{ item['image'] }}" alt="{{ item['title'] }}">
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    {% else %}
+    <h2>Search Results</h2>
+    {% for item in news %}
+    <div class="news-item">
+        <h2><a href="{{ item['link'] }}">{{ item['title'] }}</a></h2>
+        <p>Published Date: {{ item['published_date'] }}</p>
+        <p>Keywords: {{ item['keywords'] }}</p>
+        <div class="news-item-source">
+            <p>Source: <a href="{{ item['link'] }}">{{ item['source'] }}</a></p>
+        </div>
+        {% if item['image'] %}
+        <img class="news-item-img" src="{{ item['image'] }}" alt="{{ item['title'] }}">
+        {% endif %}
+    </div>
+    {% endfor %}
+    {% endif %}
+    {% if not news and not trending_news %}
+    <h2>No news items found.</h2>
+    {% endif %}
+</div>
+</body>
+</html>

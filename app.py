@@ -1,0 +1,157 @@
+import asyncio
+from aiohttp import ClientSession
+from bs4 import BeautifulSoup
+import nltk
+from nltk.corpus import stopwords
+from nltk.tokenize import word_tokenize
+from nltk.stem import WordNetLemmatizer
+from sklearn.feature_extraction.text import TfidfVectorizer
+from flask import Flask, render_template, request
+from urllib.parse import urlparse
+from flask_sqlalchemy import SQLAlchemy
+from dateutil.parser import parse
+from wordcloud import WordCloud
+from sqlalchemy import or_, and_
+
+nltk.download('punkt')
+nltk.download('stopwords')
+nltk.download('wordnet')
+
+app = Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/test.db'  # or another path of your choice
+db = SQLAlchemy(app)
+
+class NewsItem(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(80), nullable=False)
+    link = db.Column(db.String(200), nullable=False)
+    published_date = db.Column(db.DateTime, nullable=False)
+    source = db.Column(db.String(200), nullable=False)
+    image = db.Column(db.String(200))
+    all_words = db.Column(db.Text, nullable=False)
+    keywords = db.Column(db.Text, nullable=False)
+
+    @classmethod
+    def get_or_create(cls, title, link, published_date, source, image, all_words, keywords):
+        exists = db.session.query(NewsItem.id).filter_by(link=link).scalar() is not None
+        if exists:
+            return db.session.query(NewsItem).filter_by(link=link).first()
+        else:
+            instance = cls(title=title, link=link, published_date=published_date, source=source, image=image, all_words=all_words, keywords=keywords)
+            db.session.add(instance)
+            db.session.commit()
+            return instance
+
+    def as_dict(self):
+        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+
+with app.app_context():
+    db.create_all()  # This will create a new, empty database
+
+@app.route('/', methods=['GET', 'POST'])
+def index():
+    wordcloud_filename = None
+    if not NewsItem.query.first():  # Only run scrape_news if the database is empty
+        asyncio.run(scrape_news())
+    if request.method == 'POST':
+        keyword = request.form['keyword'].lower()
+        source = request.form.get('source')  # Get the selected source from the form data
+        if source == 'all':  # If 'all' was selected, don't filter by source
+            related_news = NewsItem.query.filter(NewsItem.all_words.contains(keyword)).all()
+        else:  # Otherwise, filter by the selected source
+            related_news = NewsItem.query.filter(NewsItem.all_words.contains(keyword), NewsItem.source == source).all()
+
+        # Combine keywords from all articles into a single string
+        all_keywords = ' '.join([item.keywords for item in related_news])
+
+        # Generate a word cloud only if there is at least one keyword
+        if all_keywords.strip():
+            wordcloud = WordCloud(width = 900, height = 400,
+                        background_color ='#ffffff',
+                        stopwords = None,
+                        min_font_size = 10).generate(all_keywords)
+            # Save the word cloud as an image in a static directory
+            wordcloud_filename = 'wordcloud.png'
+            wordcloud.to_file(f'static/{wordcloud_filename}')
+        else:
+            wordcloud_filename = None
+
+        related_news = [item.as_dict() for item in related_news]
+        return render_template('index.html', news=related_news, wordcloud_filename=wordcloud_filename)
+    else:
+        trending_news = NewsItem.query.order_by(NewsItem.published_date.desc()).limit(12).all()
+        trending_news = [item.as_dict() for item in trending_news]
+        return render_template('index.html', news=[], trending_news=trending_news, wordcloud_filename=wordcloud_filename)
+
+
+async def fetch(url, session):
+    async with session.get(url) as response:
+        return await response.text()
+
+async def fetch_all(urls):
+    async with ClientSession() as session:
+        tasks = []
+        for url in urls:
+            tasks.append(fetch(url, session))
+        responses = await asyncio.gather(*tasks)
+        return responses
+
+async def scrape_news():
+    urls = [
+        "https://www.blackwallstreet-pa.com/feed/",
+        "https://www.pennlive.com/arc/outboundfeeds/rss/?outputType=xml"
+    ]
+    responses = await fetch_all(urls)
+
+    for response in responses:
+        soup = BeautifulSoup(response, "xml")
+        items = soup.find_all("item")
+        article_urls = [item.link.text for item in items]
+        article_responses = await fetch_all(article_urls)
+
+        for item, article_response in zip(items, article_responses):
+            # Extract source from URL
+            parsed_url = urlparse(item.link.text)
+            source = parsed_url.netloc
+
+            # Process article content
+            article_soup = BeautifulSoup(article_response, "html.parser")
+            article_content = article_soup.get_text()
+
+            # New code to get the main image in the article
+            main_image = article_soup.find('meta', attrs={'property': 'og:image'})
+            if main_image and 'content' in main_image.attrs:
+                image = main_image['content']
+            else:
+                image = None
+
+            # Tokenize text
+            tokens = word_tokenize(article_content)
+
+            # Remove stopwords, lemmatize, and convert to lowercase
+            stop_words = set(stopwords.words('english'))
+            lemmatizer = WordNetLemmatizer()
+            processed_words = [lemmatizer.lemmatize(word.lower()) for word in tokens if not word.lower() in stop_words]
+
+            all_words = ' '.join(processed_words)
+
+            # Calculate TF-IDF
+            vectorizer = TfidfVectorizer()
+            vectors = vectorizer.fit_transform([all_words])
+            names = vectorizer.get_feature_names_out()
+            data = vectors.todense().tolist()
+
+            # Get top10 keywords based on tf-idf score
+            tfidf_scores = sorted(list(zip(names, data[0])), key=lambda x: x[1], reverse=True)[:10]
+            top_keywords = ', '.join([word for word, score in tfidf_scores])
+
+            # Check if the news item already exists in the database
+            news_item = NewsItem.query.filter_by(link=item.link.text).first()
+            if news_item is None:
+                # If the news item doesn't exist, create it
+                news_item = NewsItem.get_or_create(title=item.title.text, link=item.link.text, published_date=parse(item.pubDate.text), source=source, image=image, all_words=all_words, keywords=top_keywords)
+
+
+if __name__ == "__main__":
+    asyncio.run(scrape_news())
+    app.run(debug=True)
