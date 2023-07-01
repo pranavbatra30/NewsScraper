@@ -46,6 +46,7 @@ class NewsItem(db.Model):
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 
 with app.app_context():
+    db.drop_all()  # This will delete the entire database
     db.create_all()  # This will create a new, empty database
 
 @app.route('/', methods=['GET', 'POST'])
