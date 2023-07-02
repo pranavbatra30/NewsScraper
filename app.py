@@ -12,6 +12,7 @@ from flask_sqlalchemy import SQLAlchemy
 from dateutil.parser import parse
 from wordcloud import WordCloud
 from sqlalchemy import or_, and_
+import os
 
 nltk.download('punkt')
 nltk.download('stopwords')
@@ -155,4 +156,4 @@ async def scrape_news():
 
 if __name__ == "__main__":
     asyncio.run(scrape_news())
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=int(os.environ.get("PORT", 5000)))
