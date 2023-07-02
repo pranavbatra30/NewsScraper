@@ -48,7 +48,7 @@ class NewsItem(db.Model):
 
 with app.app_context():
     if not os.path.exists('////tmp/test.db'):
-    db.create_all()  # This will create a new, empty database
+        db.create_all()  # This will create a new, empty database
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
