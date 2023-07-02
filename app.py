@@ -47,7 +47,7 @@ class NewsItem(db.Model):
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 
 with app.app_context():
-    db.drop_all()  # This will delete the entire database
+    if not os.path.exists('////tmp/test.db'):
     db.create_all()  # This will create a new, empty database
 
 @app.route('/', methods=['GET', 'POST'])
@@ -149,8 +149,7 @@ async def scrape_news():
 
             # Check if the news item already exists in the database
             news_item = NewsItem.query.filter_by(link=item.link.text).first()
-            if news_item is None:
-                # If the news item doesn't exist, create it
+            if not NewsItem.get_or_create(title=item.title.text, link=item.link.text, published_date=parse(item.pubDate.text), source=source, image=image, all_words=all_words, keywords=top_keywords):
                 news_item = NewsItem.get_or_create(title=item.title.text, link=item.link.text, published_date=parse(item.pubDate.text), source=source, image=image, all_words=all_words, keywords=top_keywords)
 
 
