@@ -16,6 +16,18 @@ nltk.download('punkt')
 nltk.download('stopwords')
 nltk.download('wordnet')
 
+async def fetch(url, session):
+    async with session.get(url) as response:
+        return await response.text()
+
+async def fetch_all(urls):
+    async with ClientSession() as session:
+        tasks = []
+        for url in urls:
+            tasks.append(fetch(url, session))
+        responses = await asyncio.gather(*tasks)
+        return responses
+
 async def scrape_news():
     urls = [
         "https://www.blackwallstreet-pa.com/feed/",
