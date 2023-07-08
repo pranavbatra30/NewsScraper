@@ -10,7 +10,8 @@ from flask_sqlalchemy import SQLAlchemy
 from dateutil.parser import parse
 import os
 import urllib.parse
-from app import db, NewsItem  
+from app import db, NewsItem
+from app import app
 from urllib.parse import urlparse
 
 nltk.download('punkt')
@@ -84,4 +85,5 @@ async def scrape_news():
                 news_item = NewsItem.get_or_create(title=item.title.text, link=item.link.text, published_date=parse(item.pubDate.text), source=source, image=image, all_words=all_words, keywords=top_keywords)
 
 if __name__ == "__main__":
-    asyncio.run(scrape_news())
+    with app.app_context():
+        asyncio.run(scrape_news())
