@@ -20,8 +20,11 @@ nltk_packages = ['punkt', 'stopwords', 'wordnet']
 
 # download only if not already downloaded
 for package in nltk_packages:
-    if not os.path.exists(f'/app/nltk_data/{package}'):
-        nltk.download(package)
+    try:
+        if not os.path.exists(f'/app/nltk_data/{package}'):
+            nltk.download(package)
+    except FileExistsError:
+        pass
 
 app = Flask(__name__)
 
