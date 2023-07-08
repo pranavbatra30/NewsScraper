@@ -1,4 +1,3 @@
-pip install psycopg2-binary
 import asyncio
 from aiohttp import ClientSession
 from bs4 import BeautifulSoup
