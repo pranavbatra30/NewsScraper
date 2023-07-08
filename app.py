@@ -14,6 +14,11 @@ from wordcloud import WordCloud
 from sqlalchemy import or_, and_
 import os
 import urllib.parse
+from flask_migrate import Migrate
+from alembic import op
+import sqlalchemy as sa
+
+migrate = Migrate(app, db)
 
 nltk.download('punkt')
 nltk.download('stopwords')
@@ -37,9 +42,15 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False  # To suppress warning
 
 db = SQLAlchemy(app)
 
+def upgrade():
+    op.alter_column('news_item', 'title',
+               existing_type=sa.String(length=80),
+               type_=sa.String(length=500),
+               existing_nullable=True)
+
 class NewsItem(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(200), nullable=False)
+    title = db.Column(db.String(500), nullable=False)
     link = db.Column(db.String(200), nullable=False)
     published_date = db.Column(db.DateTime, nullable=False)
     source = db.Column(db.String(200), nullable=False)
