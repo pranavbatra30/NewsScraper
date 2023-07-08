@@ -13,10 +13,9 @@ from wordcloud import WordCloud
 from sqlalchemy import or_, and_
 import os
 import urllib.parse
-
 import nltk
-if not nltk.data.find('tokenizers/punkt'):
-    nltk.download('punkt')
+
+nltk.download('punkt')
 nltk.download('stopwords')
 nltk.download('wordnet')
 
