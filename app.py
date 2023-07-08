@@ -13,13 +13,28 @@ from dateutil.parser import parse
 from wordcloud import WordCloud
 from sqlalchemy import or_, and_
 import os
+import urllib.parse
 
 nltk.download('punkt')
 nltk.download('stopwords')
 nltk.download('wordnet')
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/test.db'  # or another path of your choice
+
+# Get Heroku Postgres DB URL
+DATABASE_URL = os.environ['DATABASE_URL']
+
+# Parse the URL and add the connect_args for psycopg2
+url = urllib.parse.urlparse(DATABASE_URL)
+dbname = url.path[1:]
+user = url.username
+password = url.password
+host = url.hostname
+port = url.port
+
+app.config['SQLALCHEMY_DATABASE_URI'] = f"postgresql+psycopg2://{user}:{password}@{host}:{port}/{dbname}"
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False  # To suppress warning
+
 db = SQLAlchemy(app)
 
 class NewsItem(db.Model):
@@ -47,8 +62,8 @@ class NewsItem(db.Model):
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 
 with app.app_context():
-    if not os.path.exists('////tmp/test.db'):
-        db.create_all()  # This will create a new, empty database
+    db.create_all()  # This will create a new, empty database
+
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
