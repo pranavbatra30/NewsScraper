@@ -19,7 +19,7 @@ nltk.download('stopwords')
 nltk.download('wordnet')
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL')
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/test.db'  # or another path of your choice
 db = SQLAlchemy(app)
 
 class NewsItem(db.Model):
@@ -47,8 +47,8 @@ class NewsItem(db.Model):
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 
 with app.app_context():
-    db.create_all()
-
+    if not os.path.exists('////tmp/test.db'):
+        db.create_all()  # This will create a new, empty database
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
@@ -81,8 +81,8 @@ def index():
         related_news = [item.as_dict() for item in related_news]
         return render_template('index.html', news=related_news, wordcloud_filename=wordcloud_filename)
     else:
-        # trending_news = NewsItem.query.order_by(NewsItem.published_date.desc()).limit(12).all()
-        trending_news = NewsItem.query.order_by(NewsItem.published_date.desc()).all()
+        trending_news = NewsItem.query.order_by(NewsItem.published_date.desc()).limit(12).all()
+        # trending_news = NewsItem.query.order_by(NewsItem.published_date.desc()).all()
         trending_news = [item.as_dict() for item in trending_news]
         return render_template('index.html', news=[], trending_news=trending_news, wordcloud_filename=wordcloud_filename)
 
