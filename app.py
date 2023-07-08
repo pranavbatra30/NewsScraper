@@ -82,8 +82,8 @@ def index():
         related_news = [item.as_dict() for item in related_news]
         return render_template('index.html', news=related_news, wordcloud_filename=wordcloud_filename)
     else:
-        trending_news = NewsItem.query.order_by(NewsItem.published_date.desc()).limit(12).all()
-        # trending_news = NewsItem.query.order_by(NewsItem.published_date.desc()).all()
+        # trending_news = NewsItem.query.order_by(NewsItem.published_date.desc()).limit(12).all()
+        trending_news = NewsItem.query.order_by(NewsItem.published_date.desc()).all()
         trending_news = [item.as_dict() for item in trending_news]
         return render_template('index.html', news=[], trending_news=trending_news, wordcloud_filename=wordcloud_filename)
 
