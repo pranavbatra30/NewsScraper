@@ -11,6 +11,7 @@ from dateutil.parser import parse
 import os
 import urllib.parse
 from app import db, NewsItem  
+from urllib.parse import urlparse
 
 nltk.download('punkt')
 nltk.download('stopwords')
