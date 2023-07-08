@@ -14,9 +14,13 @@ from app import db, NewsItem
 from app import app
 from urllib.parse import urlparse
 
-nltk.download('punkt')
-nltk.download('stopwords')
-nltk.download('wordnet')
+# nltk packages
+nltk_packages = ['punkt', 'stopwords', 'wordnet']
+
+# download only if not already downloaded
+for package in nltk_packages:
+    if not os.path.exists(f'/app/nltk_data/{package}'):
+        nltk.download(package)
 
 async def fetch(url, session):
     async with session.get(url) as response:
