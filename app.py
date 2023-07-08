@@ -13,44 +13,18 @@ from dateutil.parser import parse
 from wordcloud import WordCloud
 from sqlalchemy import or_, and_
 import os
-import urllib.parse
-from flask_migrate import Migrate
-from alembic import op
-import sqlalchemy as sa
-
-migrate = Migrate(app, db)
 
 nltk.download('punkt')
 nltk.download('stopwords')
 nltk.download('wordnet')
 
 app = Flask(__name__)
-
-# Get Heroku Postgres DB URL
-DATABASE_URL = os.environ['DATABASE_URL']
-
-# Parse the URL and add the connect_args for psycopg2
-url = urllib.parse.urlparse(DATABASE_URL)
-dbname = url.path[1:]
-user = url.username
-password = url.password
-host = url.hostname
-port = url.port
-
-app.config['SQLALCHEMY_DATABASE_URI'] = f"postgresql+psycopg2://{user}:{password}@{host}:{port}/{dbname}"
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False  # To suppress warning
-
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/test.db'  # or another path of your choice
 db = SQLAlchemy(app)
-
-def upgrade():
-    op.alter_column('news_item', 'title',
-               existing_type=sa.String(length=80),
-               type_=sa.String(length=500),
-               existing_nullable=True)
 
 class NewsItem(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(500), nullable=False)
+    title = db.Column(db.String(80), nullable=False)
     link = db.Column(db.String(200), nullable=False)
     published_date = db.Column(db.DateTime, nullable=False)
     source = db.Column(db.String(200), nullable=False)
@@ -73,16 +47,14 @@ class NewsItem(db.Model):
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 
 with app.app_context():
-    db.drop_all()  # This will drop all tables
-    db.create_all()  # This will create new tables
-    
-@app.before_first_request
-def before_first_request_func():
-    asyncio.run(scrape_news())
+    if not os.path.exists('////tmp/test.db'):
+        db.create_all()  # This will create a new, empty database
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
     wordcloud_filename = None
+    if not NewsItem.query.first():  # Only run scrape_news if the database is empty
+        asyncio.run(scrape_news())
     if request.method == 'POST':
         keyword = request.form['keyword'].lower()
         source = request.form.get('source')  # Get the selected source from the form data
@@ -183,4 +155,5 @@ async def scrape_news():
 
 
 if __name__ == "__main__":
+    asyncio.run(scrape_news())
     app.run(host='0.0.0.0', port=int(os.environ.get("PORT", 5000)))
