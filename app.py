@@ -62,7 +62,8 @@ class NewsItem(db.Model):
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 
 with app.app_context():
-    db.create_all()  # This will create a new, empty database
+    db.drop_all()  # This will drop all tables
+    db.create_all()  # This will create new tables
     
 @app.before_first_request
 def before_first_request_func():
