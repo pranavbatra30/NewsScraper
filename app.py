@@ -1,3 +1,4 @@
+pip install psycopg2-binary
 import asyncio
 from aiohttp import ClientSession
 from bs4 import BeautifulSoup
@@ -19,7 +20,7 @@ nltk.download('stopwords')
 nltk.download('wordnet')
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/test.db'  # or another path of your choice
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL')
 db = SQLAlchemy(app)
 
 class NewsItem(db.Model):
@@ -47,8 +48,8 @@ class NewsItem(db.Model):
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 
 with app.app_context():
-    if not os.path.exists('////tmp/test.db'):
-        db.create_all()  # This will create a new, empty database
+    db.create_all()
+
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
