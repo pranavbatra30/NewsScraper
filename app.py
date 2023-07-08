@@ -67,8 +67,6 @@ with app.app_context():
 @app.route('/', methods=['GET', 'POST'])
 def index():
     wordcloud_filename = None
-    if not NewsItem.query.first():  # Only run scrape_news if the database is empty
-        asyncio.run(scrape_news())
     if request.method == 'POST':
         keyword = request.form['keyword'].lower()
         source = request.form.get('source')  # Get the selected source from the form data
