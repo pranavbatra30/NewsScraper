@@ -1,7 +1,6 @@
 import asyncio
 from aiohttp import ClientSession
 from bs4 import BeautifulSoup
-import nltk
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 from nltk.stem import WordNetLemmatizer
@@ -15,7 +14,9 @@ from sqlalchemy import or_, and_
 import os
 import urllib.parse
 
-nltk.download('punkt')
+import nltk
+if not nltk.data.find('tokenizers/punkt'):
+    nltk.download('punkt')
 nltk.download('stopwords')
 nltk.download('wordnet')
 
