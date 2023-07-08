@@ -63,13 +63,14 @@ class NewsItem(db.Model):
 
 with app.app_context():
     db.create_all()  # This will create a new, empty database
-
+    
+@app.before_first_request
+def before_first_request_func():
+    asyncio.run(scrape_news())
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
     wordcloud_filename = None
-    if not NewsItem.query.first():  # Only run scrape_news if the database is empty
-        asyncio.run(scrape_news())
     if request.method == 'POST':
         keyword = request.form['keyword'].lower()
         source = request.form.get('source')  # Get the selected source from the form data
@@ -170,5 +171,4 @@ async def scrape_news():
 
 
 if __name__ == "__main__":
-    asyncio.run(scrape_news())
     app.run(host='0.0.0.0', port=int(os.environ.get("PORT", 5000)))
