@@ -58,6 +58,7 @@ for package in nltk_packages:
         pass
 
 app = Flask(__name__)
+app.secret_key = 'it_is_a_secret_key'
 
 # Get Heroku Postgres DB URL
 DATABASE_URL = os.environ['DATABASE_URL']
