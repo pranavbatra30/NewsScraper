@@ -104,7 +104,7 @@ with app.app_context():
     db.create_all()
 
 @app.route('/launch', methods=['GET'])
-def launch():
+def launch(*args, **kwargs):
     session.pop('keyword', None)
     session.pop('source', None)
     return redirect(url_for('index'))
