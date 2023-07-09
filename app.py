@@ -108,14 +108,19 @@ def index():
     PAGE_SIZE = 15
     page = request.args.get('page', 1, type=int)  # Get the current page number from the query parameters
     wordcloud_filename = None
+
     if request.method == 'POST':
         keyword = request.form['keyword'].lower()
         source = request.form.get('source')
         session['keyword'] = keyword
         session['source'] = source
     else:
-        keyword = session.get('keyword', '')
-        source = session.get('source', 'all')
+        if 'keyword' in session and 'source' in session:
+            keyword = session['keyword']
+            source = session['source']
+        else:
+            keyword = ''
+            source = 'all'
 
     if keyword:  # Only search for the keyword if one was provided
         if source == 'all':
