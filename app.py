@@ -110,6 +110,9 @@ def index():
     if request.method == 'POST':
         keyword = request.form['keyword'].lower()
         source = request.form.get('source')
+    elif request.method == 'GET':
+        keyword = request.args.get('keyword', '').lower() 
+        source = request.args.get('source', 'all')
         if source == 'all':
             related_news = NewsItem.query.filter(NewsItem.all_words.contains(keyword))
         else:
@@ -124,8 +127,8 @@ def index():
         # Add pagination to your query
         related_news = related_news.paginate(page=page, per_page=PAGE_SIZE, error_out=False)
 
-        next_url = url_for('index', page=related_news.next_num) if related_news.has_next else None
-        prev_url = url_for('index', page=related_news.prev_num) if related_news.has_prev else None
+        next_url = url_for('index', page=related_news.next_num, keyword=keyword, source=source) if related_news.has_next else None
+        prev_url = url_for('index', page=related_news.prev_num, keyword=keyword, source=source) if related_news.has_prev else None
 
         related_news = [item.as_dict() for item in related_news.items]
 
