@@ -115,12 +115,10 @@ def index():
         session['keyword'] = keyword
         session['source'] = source
     else:
-        if 'keyword' in session and 'source' in session:
-            keyword = session['keyword']
-            source = session['source']
-        else:
-            keyword = ''
-            source = 'all'
+        session.pop('keyword', None)  # Remove 'keyword' from session
+        session.pop('source', None)   # Remove 'source' from session
+        keyword = ''
+        source = 'all'
 
     if keyword:  # Only search for the keyword if one was provided
         if source == 'all':
