@@ -103,12 +103,6 @@ class NewsItem(db.Model):
 with app.app_context():
     db.create_all()
 
-@app.route('/launch', methods=['GET'])
-def launch(*args, **kwargs):
-    session.pop('keyword', None)
-    session.pop('source', None)
-    return redirect(url_for('index'))
-
 @app.route('/', methods=['GET', 'POST'])
 def index():
     PAGE_SIZE = 15
@@ -222,5 +216,5 @@ async def scrape_news():
 
 if __name__ == "__main__":
     asyncio.run(scrape_news())
-    app.run(host='0.0.0.0', port=int(os.environ.get("PORT", 5000)), debug=True)  # default to port 5000
+    app.run(host='0.0.0.0', port=int(os.environ.get("PORT", 5000)))
 
