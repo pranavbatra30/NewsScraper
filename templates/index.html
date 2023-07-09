@@ -252,6 +252,13 @@
         {% if item['image'] %}
         <img class="news-item-img" src="{{ item['image'] }}" alt="{{ item['title'] }}">
         {% endif %}
+        {% if next_url %}
+        <a href="{{ next_url }}">Load More</a>
+        {% endif %}
+        <!-- Add a "Previous Page" button -->
+        {% if prev_url %}
+        <a href="{{ prev_url }}">Previous Page</a>
+        {% endif %}
     </div>
     {% endfor %}
     {% endif %}
