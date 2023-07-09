@@ -110,9 +110,6 @@ def index():
     if request.method == 'POST':
         keyword = request.form['keyword'].lower()
         source = request.form.get('source')
-    elif request.method == 'GET':
-        keyword = request.args.get('keyword', '').lower() 
-        source = request.args.get('source', 'all')
         if source == 'all':
             related_news = NewsItem.query.filter(NewsItem.all_words.contains(keyword))
         else:
