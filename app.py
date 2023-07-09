@@ -5,7 +5,7 @@ from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 from nltk.stem import WordNetLemmatizer
 from sklearn.feature_extraction.text import TfidfVectorizer
-from flask import Flask, render_template, request, url_for
+from flask import Flask, render_template, request, url_for, session
 from urllib.parse import urlparse
 from flask_sqlalchemy import SQLAlchemy
 from dateutil.parser import parse
@@ -110,30 +110,33 @@ def index():
     if request.method == 'POST':
         keyword = request.form['keyword'].lower()
         source = request.form.get('source')
-        if source == 'all':
-            related_news = NewsItem.query.filter(NewsItem.all_words.contains(keyword))
-        else:
-            related_news = NewsItem.query.filter(NewsItem.all_words.contains(keyword), NewsItem.source == source)
-
-        all_keywords = ' '.join([item.keywords for item in related_news.all()])
-        if all_keywords.strip():
-            wordcloud = WordCloud(width = 900, height = 400, background_color ='#ffffff', stopwords = None, min_font_size = 10).generate(all_keywords)
-            wordcloud_filename = 'wordcloud.png'
-            wordcloud.to_file(f'static/{wordcloud_filename}')
-
-        # Add pagination to your query
-        related_news = related_news.paginate(page=page, per_page=PAGE_SIZE, error_out=False)
-
-        next_url = url_for('index', page=related_news.next_num, keyword=keyword, source=source) if related_news.has_next else None
-        prev_url = url_for('index', page=related_news.prev_num, keyword=keyword, source=source) if related_news.has_prev else None
-
-        related_news = [item.as_dict() for item in related_news.items]
-
-        return render_template('index.html', news=related_news, wordcloud_filename=wordcloud_filename, next_url=next_url, prev_url=prev_url)
+        session['keyword'] = keyword
+        session['source'] = source
     else:
-        trending_news = NewsItem.query.order_by(NewsItem.published_date.desc()).limit(12).all()
-        trending_news = [item.as_dict() for item in trending_news]
-        return render_template('index.html', news=[], trending_news=trending_news, wordcloud_filename=wordcloud_filename)
+        keyword = session.get('keyword', '')
+        source = session.get('source', 'all')
+
+    if source == 'all':
+        related_news = NewsItem.query.filter(NewsItem.all_words.contains(keyword))
+    else:
+        related_news = NewsItem.query.filter(NewsItem.all_words.contains(keyword), NewsItem.source == source)
+
+    all_keywords = ' '.join([item.keywords for item in related_news.all()])
+    if all_keywords.strip():
+        wordcloud = WordCloud(width = 900, height = 400, background_color ='#ffffff', stopwords = None, min_font_size = 10).generate(all_keywords)
+        wordcloud_filename = 'wordcloud.png'
+        wordcloud.to_file(f'static/{wordcloud_filename}')
+
+    # Add pagination to your query
+    related_news = related_news.paginate(page=page, per_page=PAGE_SIZE, error_out=False)
+
+    next_url = url_for('index', page=related_news.next_num) if related_news.has_next else None
+    prev_url = url_for('index', page=related_news.prev_num) if related_news.has_prev else None
+
+    related_news = [item.as_dict() for item in related_news.items]
+
+    return render_template('index.html', news=related_news, wordcloud_filename=wordcloud_filename, next_url=next_url, prev_url=prev_url)
+
 
 
 async def fetch(url, session):
