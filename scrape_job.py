@@ -38,7 +38,8 @@ async def scrape_news():
     urls = [
         "https://www.blackwallstreet-pa.com/feed/",
         "https://www.pennlive.com/arc/outboundfeeds/rss/?outputType=xml",
-        "https://feeds.npr.org/1001/rss.xml"
+        "https://feeds.npr.org/1001/rss.xml",
+        "https://rss.app/feeds/x9ndtFICT24anVzW.xml"
     ]
     responses = await fetch_all(urls)
 
