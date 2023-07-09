@@ -122,7 +122,7 @@ def index():
             wordcloud.to_file(f'static/{wordcloud_filename}')
 
         # Add pagination to your query
-        related_news = related_news.paginate(page, PAGE_SIZE, False)
+        related_news = related_news.paginate(page=page, per_page=PAGE_SIZE, error_out=False)
 
         next_url = url_for('index', page=related_news.next_num) if related_news.has_next else None
         prev_url = url_for('index', page=related_news.prev_num) if related_news.has_prev else None
