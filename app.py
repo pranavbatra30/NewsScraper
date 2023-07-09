@@ -117,10 +117,13 @@ def index():
         keyword = session.get('keyword', '')
         source = session.get('source', 'all')
 
-    if source == 'all':
-        related_news = NewsItem.query.filter(NewsItem.all_words.contains(keyword))
-    else:
-        related_news = NewsItem.query.filter(NewsItem.all_words.contains(keyword), NewsItem.source == source)
+    if keyword:  # Only search for the keyword if one was provided
+        if source == 'all':
+            related_news = NewsItem.query.filter(NewsItem.all_words.contains(keyword))
+        else:
+            related_news = NewsItem.query.filter(NewsItem.all_words.contains(keyword), NewsItem.source == source)
+    else:  # Otherwise, get the most recent news items
+        related_news = NewsItem.query.order_by(NewsItem.published_date.desc())
 
     all_keywords = ' '.join([item.keywords for item in related_news.all()])
     if all_keywords.strip():
