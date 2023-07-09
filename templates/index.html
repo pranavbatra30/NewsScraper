@@ -252,15 +252,20 @@
         {% if item['image'] %}
         <img class="news-item-img" src="{{ item['image'] }}" alt="{{ item['title'] }}">
         {% endif %}
-        {% if next_url %}
-        <a href="{{ next_url }}">Load More</a>
-        {% endif %}
+    </div>
+    {% endfor %}
+        <!-- Page Navigation -->
+    {% if next_url or prev_url %}
+    <div class="page-navigation">
         <!-- Add a "Previous Page" button -->
         {% if prev_url %}
         <a href="{{ prev_url }}">Previous Page</a>
         {% endif %}
+        <!-- Add a "Load More" button -->
+        {% if next_url %}
+        <a href="{{ next_url }}">Load More</a>
+        {% endif %}
     </div>
-    {% endfor %}
     {% endif %}
     {% if not news and not trending_news %}
     <h2>No news items found.</h2>
