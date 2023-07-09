@@ -15,10 +15,11 @@ import os
 import urllib.parse
 import nltk
 
-
+# function to remove keywords from the database
+"""
 def clean_keywords(keywords):
     # Define words to remove
-    words_to_remove = ['npr', 'pennlive', '2023', 'site', 'get', 'said', 'look', 'etc']
+    words_to_remove = ['npr', 'pennlive']
 
     # Tokenize keywords
     keywords = keywords.split(', ')
@@ -29,7 +30,20 @@ def clean_keywords(keywords):
     # Join words back into a comma-separated string
     return ', '.join(keywords)
 
+with app.app_context():
+    # Get all news items
+    all_news_items = NewsItem.query.all()
 
+    for news_item in all_news_items:
+        # Clean the keywords
+        cleaned_keywords = clean_keywords(news_item.keywords)
+
+        # Update the keywords field for this news item
+        news_item.keywords = cleaned_keywords
+
+    # Commit all changes to the database
+    db.session.commit()
+"""
 
 
 # nltk packages
@@ -192,22 +206,6 @@ async def scrape_news():
             news_item = NewsItem.query.filter_by(link=item.link.text).first()
             if not NewsItem.get_or_create(title=item.title.text, link=item.link.text, published_date=parse(item.pubDate.text), source=source, image=image, all_words=all_words, keywords=top_keywords):
                 news_item = NewsItem.get_or_create(title=item.title.text, link=item.link.text, published_date=parse(item.pubDate.text), source=source, image=image, all_words=all_words, keywords=top_keywords)
-
-
-with app.app_context():
-    # Get all news items
-    all_news_items = NewsItem.query.all()
-
-    for news_item in all_news_items:
-        # Clean the keywords
-        cleaned_keywords = clean_keywords(news_item.keywords)
-
-        # Update the keywords field for this news item
-        news_item.keywords = cleaned_keywords
-
-    # Commit all changes to the database
-    db.session.commit()
-
 
 
 if __name__ == "__main__":
