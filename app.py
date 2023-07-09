@@ -151,8 +151,11 @@ async def scrape_news():
             # Tokenize text
             tokens = word_tokenize(article_content)
 
+            # Define additional stopwords that you want to ignore
+            additional_stopwords = ['npr', 'pennlive', '2023', 'site', 'get', 'said', 'look', 'etc']
+
             # Remove stopwords, lemmatize, and convert to lowercase
-            stop_words = set(stopwords.words('english'))
+            stop_words = set(stopwords.words('english') + additional_stopwords)
             lemmatizer = WordNetLemmatizer()
             processed_words = [lemmatizer.lemmatize(word.lower()) for word in tokens if not word.lower() in stop_words]
 
