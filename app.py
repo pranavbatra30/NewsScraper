@@ -121,7 +121,8 @@ async def fetch_all(urls):
 async def scrape_news():
     urls = [
         "https://www.blackwallstreet-pa.com/feed/",
-        "https://www.pennlive.com/arc/outboundfeeds/rss/?outputType=xml"
+        "https://www.pennlive.com/arc/outboundfeeds/rss/?outputType=xml",
+        "https://feeds.npr.org/1001/rss.xml"
     ]
     responses = await fetch_all(urls)
 
