@@ -261,7 +261,7 @@
         {% if news %}
     <div>
         <form action="/" method="GET">
-            <input type="hidden" name="page" value="{{ request.args.get('page', 1, type=int) + 1 }}">
+            <input type="hidden" name="page" value="{{ page + 1 }}">
             <input type="submit" value="Load More">
         </form>
     </div>
