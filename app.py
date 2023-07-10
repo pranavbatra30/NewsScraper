@@ -112,9 +112,10 @@ def index():
         keyword = request.form['keyword'].lower()
         source = request.form.get('source')  # Get the selected source from the form data
         if source == 'all':  # If 'all' was selected, don't filter by source
-            related_news = NewsItem.query.filter(NewsItem.all_words.contains(keyword)).paginate(page).items
+            related_news = NewsItem.query.filter(NewsItem.all_words.contains(keyword)).limit(per_page).offset((page - 1) * per_page).all()
         else:  # Otherwise, filter by the selected source
-            related_news = NewsItem.query.filter(NewsItem.all_words.contains(keyword), NewsItem.source == source).paginate(page).items
+            related_news = NewsItem.query.filter(NewsItem.all_words.contains(keyword), NewsItem.source == source).limit(per_page).offset((page - 1) * per_page).all()
+
 
 
 
