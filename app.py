@@ -106,7 +106,7 @@ with app.app_context():
 def index():
     wordcloud_filename = None
     page = request.args.get('page', 1, type=int)  # Get the page number from the query parameters
-    per_page = 15  # Define how many news items to display per page
+    page = int(request.args.get('page', 1)) 
 
     if request.method == 'POST':
         keyword = request.form['keyword'].lower()
@@ -139,7 +139,7 @@ def index():
     else:
         trending_news = NewsItem.query.order_by(NewsItem.published_date.desc()).limit(12).all()
         trending_news = [item.as_dict() for item in trending_news]
-        return render_template('index.html', news=[], trending_news=trending_news, wordcloud_filename=wordcloud_filename)
+        return render_template('index.html', news=related_news, wordcloud_filename=wordcloud_filename, page=page)
 
 
 async def fetch(url, session):
