@@ -112,9 +112,10 @@ def index():
         keyword = request.form['keyword'].lower()
         source = request.form.get('source')  # Get the selected source from the form data
         if source == 'all':  # If 'all' was selected, don't filter by source
-            related_news = NewsItem.query.filter(NewsItem.all_words.contains(keyword)).paginate(page, per_page, False).items
+            related_news = NewsItem.query.filter(NewsItem.all_words.contains(keyword)).paginate(page, per_page=per_page, error_out=False).items
         else:  # Otherwise, filter by the selected source
-            related_news = NewsItem.query.filter(NewsItem.all_words.contains(keyword), NewsItem.source == source).paginate(page, per_page, False).items
+            related_news = NewsItem.query.filter(NewsItem.all_words.contains(keyword), NewsItem.source == source).paginate(page, per_page=per_page, error_out=False).items
+
 
         # Combine keywords from all articles into a single string
         all_keywords = ' '.join([item.keywords for item in related_news])
