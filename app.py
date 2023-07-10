@@ -105,19 +105,13 @@ with app.app_context():
 @app.route('/', methods=['GET', 'POST'])
 def index():
     wordcloud_filename = None
-    page = request.args.get('page', 1, type=int)  # Get the page number from the query parameters
-    page = int(request.args.get('page', 1)) 
-
     if request.method == 'POST':
         keyword = request.form['keyword'].lower()
         source = request.form.get('source')  # Get the selected source from the form data
         if source == 'all':  # If 'all' was selected, don't filter by source
-            related_news = NewsItem.query.filter(NewsItem.all_words.contains(keyword)).limit(per_page).offset((page - 1) * per_page).all()
+            related_news = NewsItem.query.filter(NewsItem.all_words.contains(keyword)).all()
         else:  # Otherwise, filter by the selected source
-            related_news = NewsItem.query.filter(NewsItem.all_words.contains(keyword), NewsItem.source == source).limit(per_page).offset((page - 1) * per_page).all()
-
-
-
+            related_news = NewsItem.query.filter(NewsItem.all_words.contains(keyword), NewsItem.source == source).all()
 
         # Combine keywords from all articles into a single string
         all_keywords = ' '.join([item.keywords for item in related_news])
@@ -138,8 +132,9 @@ def index():
         return render_template('index.html', news=related_news, wordcloud_filename=wordcloud_filename)
     else:
         trending_news = NewsItem.query.order_by(NewsItem.published_date.desc()).limit(12).all()
+        #trending_news = NewsItem.query.order_by(NewsItem.published_date.desc()).all()
         trending_news = [item.as_dict() for item in trending_news]
-        return render_template('index.html', news=related_news, wordcloud_filename=wordcloud_filename, page=page)
+        return render_template('index.html', news=[], trending_news=trending_news, wordcloud_filename=wordcloud_filename)
 
 
 async def fetch(url, session):
