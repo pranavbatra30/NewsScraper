@@ -258,14 +258,6 @@
     {% if not news and not trending_news %}
     <h2>No news items found.</h2>
     {% endif %}
-        {% if news %}
-    <div>
-        <form action="/" method="GET">
-            <input type="hidden" name="page" value="{{ page + 1 }}">
-            <input type="submit" value="Load More">
-        </form>
-    </div>
-    {% endif %}
 </div>
 </body>
 </html>
