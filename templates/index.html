@@ -263,21 +263,40 @@
     {% endif %}
 </div>
 <script>
-    let start = 15;  // The index of the first news item to get when the "Load more" button is clicked
+    let start = 15;
     const loadMoreButton = document.getElementById('load-more');
     loadMoreButton.addEventListener('click', function() {
-        fetch(`/${start}`, {method: 'POST', body: new URLSearchParams(`keyword=${keyword}&source=${source}`)})
-            .then(response => response.text())
-            .then(data => {
-                const parser = new DOMParser();
-                const htmlDocument = parser.parseFromString(data, 'text/html');
-                const newNewsItems = htmlDocument.getElementById('news-container').children;
-                for (let i = 0; i < newNewsItems.length; i++) {
-                    document.getElementById('news-container').appendChild(newNewsItems[i]);
-                }
-                start += 15;
-            });
+        fetch('/load_more', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: `start=${start}&keyword=${keyword}&source=${source}`
+        })
+        .then(response => response.json())
+        .then(newsItems => {
+            const newsContainer = document.getElementById('news-container');
+            for (let i = 0; i < newsItems.length; i++) {
+                const item = newsItems[i];
+                // create a new div element for the news item
+                const newsItem = document.createElement('div');
+                newsItem.className = 'news-item';
+                newsItem.innerHTML = `
+                    <h2><a href="${item.link}">${item.title}</a></h2>
+                    <p>Published Date: ${item.published_date}</p>
+                    <p>Keywords: ${item.keywords}</p>
+                    <div class="news-item-source">
+                        <p>Source: <a href="${item.link}">${item.source}</a></p>
+                    </div>
+                    ${item.image ? '<img class="news-item-img" src="' + item.image + '" alt="' + item.title + '">' : ''}
+                `;
+                // append the new news item to the news container
+                newsContainer.appendChild(newsItem);
+            }
+            start += 15;
+        });
     });
 </script>
+
 </body>
 </html>
