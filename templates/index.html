@@ -197,6 +197,9 @@
 
         .search-results-row {
             width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
 
@@ -306,6 +309,8 @@
                 `;
                 newsContainer.appendChild(newsItem);
             }
+            // move the Load More button to the bottom after loading more news items
+            newsContainer.appendChild(loadMoreButton);
             start += 15;
         });
     });
