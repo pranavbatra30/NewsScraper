@@ -223,7 +223,7 @@
     {% if not news %}
     {% if trending_news %}
     <h2>Trending News</h2>
-    <div class="news-row">
+    <div class="news-row" id="news-container">
         {% for item in trending_news %}
         <div class="news-item trending-news-item">
             <h2><a href="{{ item['link'] }}">{{ item['title'] }}</a></h2>
