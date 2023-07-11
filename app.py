@@ -76,9 +76,9 @@ def load_more():
     keyword = request.form['keyword'].lower()
     source = request.form.get('source')
     if source == 'all':
-        related_news = NewsItem.query.filter(NewsItem.all_words.contains(keyword)).all()
+        related_news = NewsItem.query.filter(NewsItem.all_words.contains(keyword)).order_by(NewsItem.published_date.desc()).all()
     else:
-        related_news = NewsItem.query.filter(NewsItem.all_words.contains(keyword), NewsItem.source == source).all()
+        related_news = NewsItem.query.filter(NewsItem.all_words.contains(keyword), NewsItem.source == source).order_by(NewsItem.published_date.desc()).all()
 
     # Pagination
     related_news = related_news[start:start+16]
@@ -94,15 +94,11 @@ def load_more():
 @app.route('/', methods=['GET', 'POST'])
 @app.route('/<int:start>', methods=['GET', 'POST'])
 def index(start=0):
-    wordcloud_filename = None
-    has_more = False
-    if request.method == 'POST':
-        keyword = request.form['keyword'].lower()
-        source = request.form.get('source')
+    # rest of your code...
         if source == 'all':
-            related_news = NewsItem.query.filter(NewsItem.all_words.contains(keyword)).all()
+            related_news = NewsItem.query.filter(NewsItem.all_words.contains(keyword)).order_by(NewsItem.published_date.desc()).all()
         else:
-            related_news = NewsItem.query.filter(NewsItem.all_words.contains(keyword), NewsItem.source == source).all()
+            related_news = NewsItem.query.filter(NewsItem.all_words.contains(keyword), NewsItem.source == source).order_by(NewsItem.published_date.desc()).all()
             
         related_news = related_news[start:start+15]    
         
