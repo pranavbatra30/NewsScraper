@@ -211,9 +211,18 @@ async def scrape_news():
 
             # Tokenize text
             tokens = word_tokenize(article_content)
-
+            
             # Define additional stopwords that you want to ignore
             additional_stopwords = ['npr', 'pennlive', '2023', 'site', 'get', 'said', 'look', 'etc']
+            
+            # Filter out short and numeric tokens
+            tokens = [token for token in tokens if len(token) > 2 and not token.isnumeric()]
+    
+            # Apply POS tagging
+            tagged_tokens = pos_tag(tokens)
+    
+            # Keep only nouns, adjectives, and verbs
+            tokens = [word for word, pos in tagged_tokens if pos.startswith('N') or pos.startswith('J') or pos.startswith('V')]
 
             # Remove stopwords, lemmatize, and convert to lowercase
             stop_words = set(stopwords.words('english') + additional_stopwords)
@@ -223,14 +232,25 @@ async def scrape_news():
             all_words = ' '.join(processed_words)
 
             # Calculate TF-IDF
-            vectorizer = TfidfVectorizer()
-            vectors = vectorizer.fit_transform([all_words])
+            vectorizer = TfidfVectorizer(ngram_range=(1, 2))  # Include unigrams and bi-grams
+            vectors = vectorizer.fit_transform([' '.join(tokens)])
             names = vectorizer.get_feature_names_out()
             data = vectors.todense().tolist()
 
             # Get top10 keywords based on tf-idf score
             tfidf_scores = sorted(list(zip(names, data[0])), key=lambda x: x[1], reverse=True)[:10]
-            top_keywords = ', '.join([word for word, score in tfidf_scores])
+            single_word_keywords = []
+            two_word_keywords = []
+            for word, score in tfidf_scores:
+                if ' ' in word:
+                    two_word_keywords.append(word)
+                else:
+                    single_word_keywords.append(word)
+            for keyword in two_word_keywords:
+                word1, word2 = keyword.split()
+                if word1 in single_word_keywords or word2 in single_word_keywords:
+                    two_word_keywords.remove(keyword)
+            top_keywords = ', '.join(single_word_keywords + two_word_keywords)
 
             # Check if the news item already exists in the database
             news_item = NewsItem.query.filter_by(link=item.link.text).first()
