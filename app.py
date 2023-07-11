@@ -94,7 +94,11 @@ def load_more():
 @app.route('/', methods=['GET', 'POST'])
 @app.route('/<int:start>', methods=['GET', 'POST'])
 def index(start=0):
-    # rest of your code...
+    wordcloud_filename = None
+    has_more = False
+    if request.method == 'POST':
+        keyword = request.form['keyword'].lower()
+        source = request.form.get('source')
         if source == 'all':
             related_news = NewsItem.query.filter(NewsItem.all_words.contains(keyword)).order_by(NewsItem.published_date.desc()).all()
         else:
