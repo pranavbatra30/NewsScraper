@@ -128,6 +128,7 @@ def load_more():
 @app.route('/<int:start>', methods=['GET', 'POST'])
 def index(start=0):
     wordcloud_filename = None
+    has_more = False
     if request.method == 'POST':
         keyword = request.form['keyword'].lower()
         source = request.form.get('source')
@@ -135,7 +136,12 @@ def index(start=0):
             related_news = NewsItem.query.filter(NewsItem.all_words.contains(keyword)).all()
         else:
             related_news = NewsItem.query.filter(NewsItem.all_words.contains(keyword), NewsItem.source == source).all()
-
+            
+        related_news = related_news[start:start+15]    
+        
+        # Check if there are more news to load
+        has_more = len(related_news) == 15
+        
         # Pagination
         related_news = related_news[start:start+15]
 
@@ -155,7 +161,7 @@ def index(start=0):
             wordcloud_filename = None
 
         related_news = [item.as_dict() for item in related_news]
-        return render_template('index.html', news=related_news, wordcloud_filename=wordcloud_filename)
+        return render_template('index.html', news=related_news, has_more=has_more, wordcloud_filename=wordcloud_filename)
     else:
         trending_news = NewsItem.query.order_by(NewsItem.published_date.desc()).limit(12).all()
         return render_template('index.html', news=[], trending_news=trending_news, wordcloud_filename=wordcloud_filename)
