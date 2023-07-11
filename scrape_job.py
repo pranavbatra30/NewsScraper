@@ -101,7 +101,7 @@ async def scrape_news():
             lemmatized_words = [lemmatizer.lemmatize(word.lower(), get_wordnet_pos(pos)) for word, pos in tagged_tokens]
 
             # Define additional stopwords that you want to ignore
-            additional_stopwords = ['npr', 'pennlive', '2023', 'site', 'get', 'said', 'look', 'etc', 'was', 'were', 'has', 'the']
+            additional_stopwords = ['npr', 'pennlive', '2023', 'site', 'get', 'said', 'look', 'etc', 'was', 'were', 'has', 'the', 'privacy']
             
             # Remove stopwords
             stop_words = set(stopwords.words('english') + additional_stopwords)
