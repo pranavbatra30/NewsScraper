@@ -69,7 +69,7 @@ async def scrape_news():
             tokens = word_tokenize(article_content)
             
             # Define additional stopwords that you want to ignore
-            additional_stopwords = ['npr', 'pennlive', '2023', 'site', 'get', 'said', 'look', 'etc']
+            additional_stopwords = ['npr', 'pennlive', '2023', 'site', 'get', 'said', 'look', 'etc', 'was', 'were', 'has']
             
             # Filter out short and numeric tokens
             tokens = [token for token in tokens if len(token) > 2 and not token.isnumeric()]
@@ -80,19 +80,22 @@ async def scrape_news():
             # Keep only nouns, adjectives, and verbs
             tokens = [word for word, pos in tagged_tokens if pos.startswith('N') or pos.startswith('J') or pos.startswith('V')]
 
-            # Remove stopwords, lemmatize, and convert to lowercase
-            stop_words = set(stopwords.words('english') + additional_stopwords)
+            # Lemmatize
             lemmatizer = WordNetLemmatizer()
-            processed_words = [lemmatizer.lemmatize(word.lower()) for word in tokens if not word.lower() in stop_words]
+            lemmatized_words = [lemmatizer.lemmatize(word.lower()) for word in tokens]
+            
+            # Remove stopwords
+            stop_words = set(stopwords.words('english') + additional_stopwords)
+            processed_words = [word for word in lemmatized_words if not word in stop_words]
 
             all_words = ' '.join(processed_words)
 
             # Calculate TF-IDF
             vectorizer = TfidfVectorizer(ngram_range=(1, 2))  # Include unigrams and bi-grams
-            vectors = vectorizer.fit_transform([' '.join(tokens)])
+            vectors = vectorizer.fit_transform([' '.join(processed_words)])  # Use processed_words instead of tokens
             names = vectorizer.get_feature_names_out()
             data = vectors.todense().tolist()
-
+            
             # Get top10 keywords based on tf-idf score
             tfidf_scores = sorted(list(zip(names, data[0])), key=lambda x: x[1], reverse=True)[:10]
             single_word_keywords = []
