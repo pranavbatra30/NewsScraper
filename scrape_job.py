@@ -124,10 +124,15 @@ async def scrape_news():
                     two_word_keywords.append(word)
                 else:
                     single_word_keywords.append(word)
+            
+            # Remove single-word keywords that are part of a two-word keyword
             for keyword in two_word_keywords:
                 word1, word2 = keyword.split()
-                if word1 in single_word_keywords or word2 in single_word_keywords:
-                    two_word_keywords.remove(keyword)
+                if word1 in single_word_keywords:
+                    single_word_keywords.remove(word1)
+                if word2 in single_word_keywords:
+                    single_word_keywords.remove(word2)
+            
             top_keywords = ', '.join(single_word_keywords + two_word_keywords)
 
             # Check if the news item already exists in the database
