@@ -104,7 +104,7 @@ with app.app_context():
 
 @app.route('/load_more', methods=['POST'])
 def load_more():
-    start = request.form['start']
+    start = int(request.form['start'])
     keyword = request.form['keyword'].lower()
     source = request.form.get('source')
     if source == 'all':
