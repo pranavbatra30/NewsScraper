@@ -69,10 +69,10 @@ async def scrape_news():
             tokens = word_tokenize(article_content)
             
             # Define additional stopwords that you want to ignore
-            additional_stopwords = ['npr', 'pennlive', '2023', 'site', 'get', 'said', 'look', 'etc', 'was', 'were', 'has']
+            additional_stopwords = ['npr', 'pennlive', '2023', 'site', 'get', 'said', 'look', 'etc', 'was', 'were', 'has', 'the']
             
             # Filter out short and numeric tokens
-            tokens = [token for token in tokens if len(token) > 2 and not token.isnumeric()]
+            tokens = [token for token in tokens if len(token) > 2 and not token.isnumeric() and len(token) > 2]
     
             # Apply POS tagging
             tagged_tokens = pos_tag(tokens)
