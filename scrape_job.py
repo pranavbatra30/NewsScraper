@@ -75,9 +75,6 @@ async def scrape_news():
             # Tokenize text
             tokens = word_tokenize(article_content)
             
-            # Define additional stopwords that you want to ignore
-            additional_stopwords = ['npr', 'pennlive', '2023', 'site', 'get', 'said', 'look', 'etc', 'was', 'were', 'has', 'the']
-            
             # Filter out short and numeric tokens
             tokens = [token for token in tokens if len(token) > 2 and not token.isnumeric()]
     
@@ -87,9 +84,24 @@ async def scrape_news():
             # Keep only nouns, adjectives, and verbs
             tokens = [word for word, pos in tagged_tokens if pos.startswith('N') or pos.startswith('J') or pos.startswith('V')]
 
-            # Lemmatize
+            # Lemmatize with POS tag
+            from nltk.corpus import wordnet
+            def get_wordnet_pos(treebank_tag):
+                if treebank_tag.startswith('J'):
+                    return wordnet.ADJ
+                elif treebank_tag.startswith('V'):
+                    return wordnet.VERB
+                elif treebank_tag.startswith('N'):
+                    return wordnet.NOUN
+                elif treebank_tag.startswith('R'):
+                    return wordnet.ADV
+                else:
+                    return wordnet.NOUN
             lemmatizer = WordNetLemmatizer()
-            lemmatized_words = [lemmatizer.lemmatize(word.lower()) for word in tokens]
+            lemmatized_words = [lemmatizer.lemmatize(word.lower(), get_wordnet_pos(pos)) for word, pos in tagged_tokens]
+
+            # Define additional stopwords that you want to ignore
+            additional_stopwords = ['npr', 'pennlive', '2023', 'site', 'get', 'said', 'look', 'etc', 'was', 'were', 'has', 'the']
             
             # Remove stopwords
             stop_words = set(stopwords.words('english') + additional_stopwords)
