@@ -15,7 +15,7 @@ from app import app
 from urllib.parse import urlparse
 
 # nltk packages
-nltk_packages = ['punkt', 'stopwords', 'wordnet']
+nltk_packages = ['punkt', 'averaged_perceptron_tagger', 'stopwords', 'wordnet']
 
 # download only if not already downloaded
 for package in nltk_packages:
@@ -77,9 +77,18 @@ async def scrape_news():
 
             all_words = ' '.join(processed_words)
 
+            # Filter out short and numeric tokens
+            tokens = [token for token in tokens if len(token) > 2 and not token.isnumeric()]
+    
+            # Apply POS tagging
+            tagged_tokens = pos_tag(tokens)
+    
+            # Keep only nouns, adjectives, and verbs
+            tokens = [word for word, pos in tagged_tokens if pos.startswith('N') or pos.startswith('J') or pos.startswith('V')]
+
             # Calculate TF-IDF
-            vectorizer = TfidfVectorizer()
-            vectors = vectorizer.fit_transform([all_words])
+            vectorizer = TfidfVectorizer(ngram_range=(1, 2))  # Include unigrams and bi-grams
+            vectors = vectorizer.fit_transform([' '.join(tokens)])
             names = vectorizer.get_feature_names_out()
             data = vectors.todense().tolist()
 
