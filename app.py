@@ -113,12 +113,15 @@ def load_more():
         related_news = NewsItem.query.filter(NewsItem.all_words.contains(keyword), NewsItem.source == source).all()
 
     # Pagination
-    related_news = related_news[start:start+15]
+    related_news = related_news[start:start+16]
 
     related_news = [item.as_dict() for item in related_news]
 
     # return the news items as JSON
-    return jsonify(related_news)
+    return jsonify({
+        'news': related_news[:15],  # Only return the first 15 items
+        'has_more': len(related_news) > 15  # If we got an extra item, there's more data
+    })
 
 
 @app.route('/', methods=['GET', 'POST'])
