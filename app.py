@@ -103,15 +103,19 @@ with app.app_context():
     db.create_all()
 
 @app.route('/', methods=['GET', 'POST'])
-def index():
+@app.route('/<int:start>', methods=['GET', 'POST'])
+def index(start=0):
     wordcloud_filename = None
     if request.method == 'POST':
         keyword = request.form['keyword'].lower()
-        source = request.form.get('source')  # Get the selected source from the form data
-        if source == 'all':  # If 'all' was selected, don't filter by source
+        source = request.form.get('source')
+        if source == 'all':
             related_news = NewsItem.query.filter(NewsItem.all_words.contains(keyword)).all()
-        else:  # Otherwise, filter by the selected source
+        else:
             related_news = NewsItem.query.filter(NewsItem.all_words.contains(keyword), NewsItem.source == source).all()
+
+        # Pagination
+        related_news = related_news[start:start+15]
 
         # Combine keywords from all articles into a single string
         all_keywords = ' '.join([item.keywords for item in related_news])
@@ -132,8 +136,6 @@ def index():
         return render_template('index.html', news=related_news, wordcloud_filename=wordcloud_filename)
     else:
         trending_news = NewsItem.query.order_by(NewsItem.published_date.desc()).limit(12).all()
-        #trending_news = NewsItem.query.order_by(NewsItem.published_date.desc()).all()
-        trending_news = [item.as_dict() for item in trending_news]
         return render_template('index.html', news=[], trending_news=trending_news, wordcloud_filename=wordcloud_filename)
 
 
