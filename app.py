@@ -15,41 +15,9 @@ import os
 import urllib.parse
 import nltk
 
-# function to remove keywords from the database
-"""
-def clean_keywords(keywords):
-    # Define words to remove
-    words_to_remove = ['npr', 'pennlive']
-
-    # Tokenize keywords
-    keywords = keywords.split(', ')
-
-    # Remove unwanted words
-    keywords = [word for word in keywords if word not in words_to_remove]
-
-    # Join words back into a comma-separated string
-    return ', '.join(keywords)
-
-with app.app_context():
-    # Get all news items
-    all_news_items = NewsItem.query.all()
-
-    for news_item in all_news_items:
-        # Clean the keywords
-        cleaned_keywords = clean_keywords(news_item.keywords)
-
-        # Update the keywords field for this news item
-        news_item.keywords = cleaned_keywords
-
-    # Commit all changes to the database
-    db.session.commit()
-"""
-
-
 # nltk packages
 nltk_packages = ['punkt', 'stopwords', 'wordnet']
 
-# download only if not already downloaded
 for package in nltk_packages:
     try:
         if not os.path.exists(f'/app/nltk_data/{package}'):
@@ -117,7 +85,6 @@ def load_more():
 
     related_news = [item.as_dict() for item in related_news]
 
-    # return the news items as JSON
     return jsonify({
         'news': related_news[:15],  # Only return the first 15 items
         'has_more': len(related_news) > 15  # If we got an extra item, there's more data
@@ -178,86 +145,6 @@ async def fetch_all(urls):
             tasks.append(fetch(url, session))
         responses = await asyncio.gather(*tasks)
         return responses
-"""
-async def scrape_news():
-    urls = [
-        "https://www.blackwallstreet-pa.com/feed/",
-        "https://www.pennlive.com/arc/outboundfeeds/rss/?outputType=xml",
-        "https://feeds.npr.org/1001/rss.xml"
-    ]
-    responses = await fetch_all(urls)
-
-    for response in responses:
-        soup = BeautifulSoup(response, "xml")
-        items = soup.find_all("item")
-        article_urls = [item.link.text for item in items]
-        article_responses = await fetch_all(article_urls)
-
-        for item, article_response in zip(items, article_responses):
-            # Extract source from URL
-            parsed_url = urlparse(item.link.text)
-            source = parsed_url.netloc
-
-            # Process article content
-            article_soup = BeautifulSoup(article_response, "html.parser")
-            article_content = article_soup.get_text()
-
-            # New code to get the main image in the article
-            main_image = article_soup.find('meta', attrs={'property': 'og:image'})
-            if main_image and 'content' in main_image.attrs:
-                image = main_image['content']
-            else:
-                image = None
-
-            # Tokenize text
-            tokens = word_tokenize(article_content)
-            
-            # Define additional stopwords that you want to ignore
-            additional_stopwords = ['npr', 'pennlive', '2023', 'site', 'get', 'said', 'look', 'etc']
-            
-            # Filter out short and numeric tokens
-            tokens = [token for token in tokens if len(token) > 2 and not token.isnumeric()]
-    
-            # Apply POS tagging
-            tagged_tokens = pos_tag(tokens)
-    
-            # Keep only nouns, adjectives, and verbs
-            tokens = [word for word, pos in tagged_tokens if pos.startswith('N') or pos.startswith('J') or pos.startswith('V')]
-
-            # Remove stopwords, lemmatize, and convert to lowercase
-            stop_words = set(stopwords.words('english') + additional_stopwords)
-            lemmatizer = WordNetLemmatizer()
-            processed_words = [lemmatizer.lemmatize(word.lower()) for word in tokens if not word.lower() in stop_words]
-
-            all_words = ' '.join(processed_words)
-
-            # Calculate TF-IDF
-            vectorizer = TfidfVectorizer(ngram_range=(1, 2))  # Include unigrams and bi-grams
-            vectors = vectorizer.fit_transform([' '.join(tokens)])
-            names = vectorizer.get_feature_names_out()
-            data = vectors.todense().tolist()
-
-            # Get top10 keywords based on tf-idf score
-            tfidf_scores = sorted(list(zip(names, data[0])), key=lambda x: x[1], reverse=True)[:10]
-            single_word_keywords = []
-            two_word_keywords = []
-            for word, score in tfidf_scores:
-                if ' ' in word:
-                    two_word_keywords.append(word)
-                else:
-                    single_word_keywords.append(word)
-            for keyword in two_word_keywords:
-                word1, word2 = keyword.split()
-                if word1 in single_word_keywords or word2 in single_word_keywords:
-                    two_word_keywords.remove(keyword)
-            top_keywords = ', '.join(single_word_keywords + two_word_keywords)
-
-            # Check if the news item already exists in the database
-            news_item = NewsItem.query.filter_by(link=item.link.text).first()
-            if not NewsItem.get_or_create(title=item.title.text, link=item.link.text, published_date=parse(item.pubDate.text), source=source, image=image, all_words=all_words, keywords=top_keywords):
-                news_item = NewsItem.get_or_create(title=item.title.text, link=item.link.text, published_date=parse(item.pubDate.text), source=source, image=image, all_words=all_words, keywords=top_keywords)
-"""
 
 if __name__ == "__main__":
-    #asyncio.run(scrape_news())
     app.run(host='0.0.0.0', port=int(os.environ.get("PORT", 5000)))
