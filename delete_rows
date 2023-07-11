@@ -1,5 +1,0 @@
-from app import db, NewsItem
-
-# delete all rows from NewsItem
-db.session.query(NewsItem).delete()
-db.session.commit()
