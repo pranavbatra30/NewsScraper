@@ -279,7 +279,13 @@
         })
         .then(response => response.json())
         .then(newsItems => {
-            const newsContainer = document.getElementById('news-container');
+            let newsContainer = document.getElementById('news-container');
+            if (!newsContainer) {
+                newsContainer = document.createElement('div');
+                newsContainer.id = 'news-container';
+                newsContainer.className = 'news-row';
+                document.querySelector('.container').appendChild(newsContainer);
+            }
             for (let i = 0; i < newsItems.length; i++) {
                 const item = newsItems[i];
                 const newsItem = document.createElement('div');
