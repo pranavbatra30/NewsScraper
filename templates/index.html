@@ -258,6 +258,26 @@
     {% if not news and not trending_news %}
     <h2>No news items found.</h2>
     {% endif %}
+    {% if news %}
+    <button id="load-more">Load more</button>
+    {% endif %}
 </div>
+<script>
+    let start = 15;  // The index of the first news item to get when the "Load more" button is clicked
+    const loadMoreButton = document.getElementById('load-more');
+    loadMoreButton.addEventListener('click', function() {
+        fetch(`/${start}`, {method: 'POST', body: new URLSearchParams(`keyword=${keyword}&source=${source}`)})
+            .then(response => response.text())
+            .then(data => {
+                const parser = new DOMParser();
+                const htmlDocument = parser.parseFromString(data, 'text/html');
+                const newNewsItems = htmlDocument.getElementById('news-container').children;
+                for (let i = 0; i < newNewsItems.length; i++) {
+                    document.getElementById('news-container').appendChild(newNewsItems[i]);
+                }
+                start += 15;
+            });
+    });
+</script>
 </body>
 </html>
