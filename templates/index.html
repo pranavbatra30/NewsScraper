@@ -264,6 +264,8 @@
 </div>
 <script>
     let start = 15;
+    let keyword = document.querySelector("input[name='keyword']").value;
+    let source = document.querySelector("select[name='source']").value;
     const loadMoreButton = document.getElementById('load-more');
     loadMoreButton.addEventListener('click', function() {
         fetch('/load_more', {
