@@ -178,7 +178,7 @@ async def fetch_all(urls):
             tasks.append(fetch(url, session))
         responses = await asyncio.gather(*tasks)
         return responses
-
+"""
 async def scrape_news():
     urls = [
         "https://www.blackwallstreet-pa.com/feed/",
@@ -256,8 +256,8 @@ async def scrape_news():
             news_item = NewsItem.query.filter_by(link=item.link.text).first()
             if not NewsItem.get_or_create(title=item.title.text, link=item.link.text, published_date=parse(item.pubDate.text), source=source, image=image, all_words=all_words, keywords=top_keywords):
                 news_item = NewsItem.get_or_create(title=item.title.text, link=item.link.text, published_date=parse(item.pubDate.text), source=source, image=image, all_words=all_words, keywords=top_keywords)
-
+"""
 
 if __name__ == "__main__":
-    asyncio.run(scrape_news())
+    #asyncio.run(scrape_news())
     app.run(host='0.0.0.0', port=int(os.environ.get("PORT", 5000)))
