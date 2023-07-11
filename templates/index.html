@@ -341,7 +341,10 @@
             body: `start=${start}&keyword=${keyword}&source=${source}`
         })
         .then(response => response.json())
-        .then(newsItems => {
+        .then(data => {
+            let newsItems = data.news;
+            let hasMore = data.has_more;
+
             let newsContainer = document.getElementById('news-container');
             if (!newsContainer) {
                 newsContainer = document.createElement('div');
@@ -365,6 +368,13 @@
                 newsContainer.appendChild(newsItem);
             }
             newsContainer.appendChild(loadMoreButton);
+
+            if (!hasMore) {
+                loadMoreButton.style.display = 'none';
+            } else {
+                loadMoreButton.style.display = 'block';
+            }
+
             start += 15;
         });
     });
