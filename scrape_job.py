@@ -106,6 +106,9 @@ async def update_keywords():
     # Get all news items from the database
     news_items = NewsItem.query.all()
 
+    # Define additional stopwords that you want to ignore
+    additional_stopwords = ['npr', 'pennlive', '2023', 'site', 'get', 'said', 'look', 'etc']
+
     # Iterate over all news items
     for news_item in news_items:
         # Process article content
