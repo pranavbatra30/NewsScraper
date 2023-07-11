@@ -95,7 +95,18 @@ async def scrape_news():
 
             # Get top10 keywords based on tf-idf score
             tfidf_scores = sorted(list(zip(names, data[0])), key=lambda x: x[1], reverse=True)[:10]
-            top_keywords = ', '.join([word for word, score in tfidf_scores])
+            single_word_keywords = []
+            two_word_keywords = []
+            for word, score in tfidf_scores:
+                if ' ' in word:
+                    two_word_keywords.append(word)
+                else:
+                    single_word_keywords.append(word)
+            for keyword in two_word_keywords:
+                word1, word2 = keyword.split()
+                if word1 in single_word_keywords or word2 in single_word_keywords:
+                    two_word_keywords.remove(keyword)
+            top_keywords = ', '.join(single_word_keywords + two_word_keywords)
 
             # Check if the news item already exists in the database
             news_item = NewsItem.query.filter_by(link=item.link.text).first()
