@@ -35,6 +35,13 @@ async def fetch_all(urls):
         responses = await asyncio.gather(*tasks)
         return responses
 
+def custom_tokenizer(sentence):
+    # use nltk's word_tokenize
+    token_list = nltk.word_tokenize(sentence)
+    # filter out short tokens
+    token_list = [token for token in token_list if len(token) > 2]
+    return token_list
+
 async def scrape_news():
     urls = [
         "https://www.blackwallstreet-pa.com/feed/",
@@ -72,7 +79,7 @@ async def scrape_news():
             additional_stopwords = ['npr', 'pennlive', '2023', 'site', 'get', 'said', 'look', 'etc', 'was', 'were', 'has', 'the']
             
             # Filter out short and numeric tokens
-            tokens = [token for token in tokens if len(token) > 2 and not token.isnumeric() and len(token) > 2]
+            tokens = [token for token in tokens if len(token) > 2 and not token.isnumeric()]
     
             # Apply POS tagging
             tagged_tokens = pos_tag(tokens)
@@ -91,7 +98,7 @@ async def scrape_news():
             all_words = ' '.join(processed_words)
 
             # Calculate TF-IDF
-            vectorizer = TfidfVectorizer(ngram_range=(1, 2))  # Include unigrams and bi-grams
+            vectorizer = TfidfVectorizer(ngram_range=(1, 2), tokenizer=custom_tokenizer)  # Include unigrams and bi-grams
             vectors = vectorizer.fit_transform([' '.join(processed_words)])  # Use processed_words instead of tokens
             names = vectorizer.get_feature_names_out()
             data = vectors.todense().tolist()
