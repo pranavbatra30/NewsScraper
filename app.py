@@ -102,6 +102,25 @@ class NewsItem(db.Model):
 with app.app_context():
     db.create_all()
 
+@app.route('/load_more', methods=['POST'])
+def load_more():
+    start = request.form['start']
+    keyword = request.form['keyword'].lower()
+    source = request.form.get('source')
+    if source == 'all':
+        related_news = NewsItem.query.filter(NewsItem.all_words.contains(keyword)).all()
+    else:
+        related_news = NewsItem.query.filter(NewsItem.all_words.contains(keyword), NewsItem.source == source).all()
+
+    # Pagination
+    related_news = related_news[start:start+15]
+
+    related_news = [item.as_dict() for item in related_news]
+
+    # return the news items as JSON
+    return jsonify(related_news)
+
+
 @app.route('/', methods=['GET', 'POST'])
 @app.route('/<int:start>', methods=['GET', 'POST'])
 def index(start=0):
