@@ -218,13 +218,30 @@
         #load-more:hover {
             background-color: var(--hover-color);
         }
+
+        #home-button {
+            padding: 10px 20px;
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 5px;
+            text-align: center;
+        }
+
+        #home-button a {
+            color: white;
+            text-decoration: none;
+        }
         
+        #home-button:hover {
+            background-color: var(--hover-color);
+        }
     </style>
 </head>
 <body>
 <div class="container">
     <div class="header">
         <h1>News Scraper</h1>
+        <div id="home-button"><a href="/">Home</a></div>
     </div>
     <div class="search-box">
         <form method="POST">
