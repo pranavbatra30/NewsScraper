@@ -264,10 +264,12 @@
 </div>
 <script>
     let start = 15;
-    let keyword = document.querySelector("input[name='keyword']").value;
-    let source = document.querySelector("select[name='source']").value;
     const loadMoreButton = document.getElementById('load-more');
+    
     loadMoreButton.addEventListener('click', function() {
+        let keyword = document.querySelector("input[name='keyword']").value;
+        let source = document.querySelector("select[name='source']").value;
+    
         fetch('/load_more', {
             method: 'POST',
             headers: {
@@ -280,7 +282,6 @@
             const newsContainer = document.getElementById('news-container');
             for (let i = 0; i < newsItems.length; i++) {
                 const item = newsItems[i];
-                // create a new div element for the news item
                 const newsItem = document.createElement('div');
                 newsItem.className = 'news-item';
                 newsItem.innerHTML = `
@@ -292,7 +293,6 @@
                     </div>
                     ${item.image ? '<img class="news-item-img" src="' + item.image + '" alt="' + item.title + '">' : ''}
                 `;
-                // append the new news item to the news container
                 newsContainer.appendChild(newsItem);
             }
             start += 15;
