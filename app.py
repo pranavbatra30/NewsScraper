@@ -5,7 +5,7 @@ from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 from nltk.stem import WordNetLemmatizer
 from sklearn.feature_extraction.text import TfidfVectorizer
-from flask import Flask, render_template, request
+from flask import Flask, request, render_template, jsonify
 from urllib.parse import urlparse
 from flask_sqlalchemy import SQLAlchemy
 from dateutil.parser import parse
