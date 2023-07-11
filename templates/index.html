@@ -321,7 +321,7 @@
     {% if not news and not trending_news %}
     <h2>No news items found.</h2>
     {% endif %}
-    {% if news %}
+    {% if news and has_more %}
     <button id="load-more">Load more</button>
     {% endif %}
 </div>
@@ -375,7 +375,9 @@
                 loadMoreButton.style.display = 'block';
             }
 
-            start += 15;
+            document.querySelector('form').addEventListener('submit', function() {
+                start = 15;
+            });
         });
     });
 </script>
