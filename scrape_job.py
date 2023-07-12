@@ -101,7 +101,7 @@ async def scrape_news():
             lemmatized_words = [lemmatizer.lemmatize(word.lower(), get_wordnet_pos(pos)) for word, pos in tagged_tokens]
 
             # Define additional stopwords that you want to ignore
-            additional_stopwords = ['npr', 'pennlive', '2023', 'site', 'get', 'said', 'look', 'etc', 'was', 'were', 'has', 'the', 'privacy', 'medium', 'say', 'may', 'give']
+            additional_stopwords = ['npr', 'pennlive', '2023', 'site', 'get', 'said', 'look', 'etc', 'was', 'were', 'has', 'the', 'privacy', 'medium', 'say', 'may', 'give', 'since', 'choice']
             
             # Remove stopwords
             stop_words = set(stopwords.words('english') + additional_stopwords)
@@ -140,7 +140,7 @@ async def scrape_news():
             if not NewsItem.get_or_create(title=item.title.text, link=item.link.text, published_date=parse(item.pubDate.text), source=source, image=image, all_words=all_words, keywords=top_keywords):
                 news_item = NewsItem.get_or_create(title=item.title.text, link=item.link.text, published_date=parse(item.pubDate.text), source=source, image=image, all_words=all_words, keywords=top_keywords)
 
-
+'''
 def remove_keyword(session, keyword):
     # Get all NewsItems from the database
     news_items = session.query(NewsItem).all()
@@ -168,11 +168,11 @@ def remove_keyword(session, keyword):
     
     # Commit the changes to the database
     session.commit()
-
+'''
 
 
 if __name__ == "__main__":
     with app.app_context():
         asyncio.run(scrape_news())
-        remove_keyword(db.session, "give")
+        # remove_keyword(db.session, "give")
 
