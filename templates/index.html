@@ -344,7 +344,7 @@
         .then(data => {
             let newsItems = data.news;
             let hasMore = data.has_more;
-
+    
             let newsContainer = document.getElementById('news-container');
             if (!newsContainer) {
                 newsContainer = document.createElement('div');
@@ -368,16 +368,18 @@
                 newsContainer.appendChild(newsItem);
             }
             newsContainer.appendChild(loadMoreButton);
-
+    
             if (!hasMore) {
                 loadMoreButton.style.display = 'none';
             } else {
                 loadMoreButton.style.display = 'block';
             }
-
-            document.querySelector("input[name='start']").value = parseInt(start) + 15;
+    
+            start = parseInt(start) + 15;
+            document.querySelector("input[name='start']").value = start;
         });
     });
+
 </script>
 </body>
 </html>
