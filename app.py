@@ -80,16 +80,17 @@ def load_more():
     else:
         related_news = NewsItem.query.filter(NewsItem.all_words.contains(keyword), NewsItem.source == source).order_by(NewsItem.published_date.desc()).all()
 
+    # Check if there are more news to load
+    has_more = len(related_news) > start + 15
+    
     # Pagination
     related_news = related_news[start:start+15]
     
-    # Check if there are more news to load
-    has_more = len(related_news) < len(NewsItem.query.filter(NewsItem.all_words.contains(keyword)).order_by(NewsItem.published_date.desc()).all()) - start
-    
     return jsonify({
-        'news': related_news,  # return the 15 items
+        'news': [item.as_dict() for item in related_news],  # return the 15 items
         'has_more': has_more  # If there's more data
     })
+
 
 
 @app.route('/', methods=['GET', 'POST'])
