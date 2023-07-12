@@ -140,8 +140,30 @@ async def scrape_news():
             if not NewsItem.get_or_create(title=item.title.text, link=item.link.text, published_date=parse(item.pubDate.text), source=source, image=image, all_words=all_words, keywords=top_keywords):
                 news_item = NewsItem.get_or_create(title=item.title.text, link=item.link.text, published_date=parse(item.pubDate.text), source=source, image=image, all_words=all_words, keywords=top_keywords)
 
+def remove_keyword(session, keyword):
+    # Get all NewsItems from the database
+    news_items = session.query(NewsItem).all()
+    
+    for news_item in news_items:
+        # Get the current keywords
+        keywords = news_item.keywords.split(', ')
+        
+        # Remove the specified keyword if it is present
+        if keyword in keywords:
+            keywords.remove(keyword)
+        
+        # Set the NewsItem's keywords to the updated list
+        news_item.keywords = ', '.join(keywords)
+        
+        # Add the NewsItem back to the session
+        session.add(news_item)
+    
+    # Commit the changes to the database
+    session.commit()
+
 
 if __name__ == "__main__":
     with app.app_context():
         asyncio.run(scrape_news())
+        remove_keyword(db.session, "may")
 
