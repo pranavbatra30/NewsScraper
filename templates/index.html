@@ -269,6 +269,7 @@
     <div class="search-box">
         <form method="POST">
             <input type="text" name="keyword" placeholder="Enter a keyword..." required>
+            <input type="hidden" name="start" value="0">
             <select name="source">
                 <option value="all">All</option>
                 <option value="www.blackwallstreet-pa.com">Black Wall Street PA</option>
@@ -326,12 +327,11 @@
     {% endif %}
 </div>
 <script>
-    let start = 15;
     const loadMoreButton = document.getElementById('load-more');
-    
     loadMoreButton.addEventListener('click', function() {
         let keyword = document.querySelector("input[name='keyword']").value;
         let source = document.querySelector("select[name='source']").value;
+        let start = document.querySelector("input[name='start']").value;
     
         fetch('/load_more', {
             method: 'POST',
@@ -375,9 +375,7 @@
                 loadMoreButton.style.display = 'block';
             }
 
-            document.querySelector('form').addEventListener('submit', function() {
-                start = 15;
-            });
+            document.querySelector("input[name='start']").value = parseInt(start) + 15;
         });
     });
 </script>
