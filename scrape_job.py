@@ -148,18 +148,26 @@ def remove_keyword(session, keyword):
         # Get the current keywords
         keywords = news_item.keywords.split(', ')
         
-        # Remove the specified keyword if it is present
-        if keyword in keywords:
-            keywords.remove(keyword)
+        # Create a new list to store the updated keywords
+        new_keywords = []
+        
+        for k in keywords:
+            # Split the keyword into words
+            words = k.split()
+            
+            # If the specified keyword is not in the words, add the keyword to the new list
+            if keyword not in words:
+                new_keywords.append(k)
         
         # Set the NewsItem's keywords to the updated list
-        news_item.keywords = ', '.join(keywords)
+        news_item.keywords = ', '.join(new_keywords)
         
         # Add the NewsItem back to the session
         session.add(news_item)
     
     # Commit the changes to the database
     session.commit()
+
 
 
 if __name__ == "__main__":
