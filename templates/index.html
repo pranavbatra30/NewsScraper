@@ -327,11 +327,12 @@
     {% endif %}
 </div>
 <script>
+    let start = 15;  // Initialize start with 15 as the first page already displays the first 15 items
+
     const loadMoreButton = document.getElementById('load-more');
     loadMoreButton.addEventListener('click', function() {
         let keyword = document.querySelector("input[name='keyword']").value;
         let source = document.querySelector("select[name='source']").value;
-        let start = document.querySelector("input[name='start']").value;
     
         fetch('/load_more', {
             method: 'POST',
@@ -375,8 +376,7 @@
                 loadMoreButton.style.display = 'block';
             }
     
-            start = parseInt(start) + 15;
-            document.querySelector("input[name='start']").value = start;
+            start += 15;  // Increment start by 15 for the next load_more request
         });
     });
 
