@@ -267,10 +267,6 @@
 <div id="home-button-container">
     <a href="/"><div id="home-button">Home</div></a>
 </div>
-
-
-
-    
 <div class="container">
     <div class="header">
         <h1>News Scraper</h1>
@@ -303,28 +299,21 @@
                         <img src="{{ url_for('static', filename=wordcloud_filenames['www.npr.org']) }}" alt="Word Cloud NPR" style="width: 100%; height: 300px;">
                     </div>
                     {% endif %}
-                    {% if wordcloud_filenames['www.blackwallstreet-pa.com'] %}
-                    <div class="wordcloud-box" style="width: 49.5%;">
-                        <h3 style="text-align: center;">Black Wall Street PA</h3>
-                        <img src="{{ url_for('static', filename=wordcloud_filenames['www.blackwallstreet-pa.com']) }}" alt="Word Cloud Black Wall Street PA" style="width: 100%; height: 300px;">
-                    </div>
-                    {% endif %}
                 </div>
             {% else %}
                 <div class="wordcloud-box">
-                    {% if wordcloud_filenames['www.pennlive.com'] %}
+                    {% if request.form.source == 'www.pennlive.com' and wordcloud_filenames['www.pennlive.com'] %}
                     <img src="{{ url_for('static', filename=wordcloud_filenames['www.pennlive.com']) }}" alt="Word Cloud Pennlive">
                     {% endif %}
-                    {% if wordcloud_filenames['www.npr.org'] %}
+                    {% if request.form.source == 'www.npr.org' and wordcloud_filenames['www.npr.org'] %}
                     <img src="{{ url_for('static', filename=wordcloud_filenames['www.npr.org']) }}" alt="Word Cloud NPR">
                     {% endif %}
-                    {% if wordcloud_filenames['www.blackwallstreet-pa.com'] %}
+                    {% if request.form.source == 'www.blackwallstreet-pa.com' and wordcloud_filenames['www.blackwallstreet-pa.com'] %}
                     <img src="{{ url_for('static', filename=wordcloud_filenames['www.blackwallstreet-pa.com']) }}" alt="Word Cloud Black Wall Street PA">
                     {% endif %}
                 </div>
             {% endif %}
         {% endif %}
-
     {% if not news %}
     {% if trending_news %}
     <h2>Trending News</h2>
