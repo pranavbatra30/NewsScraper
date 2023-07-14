@@ -282,15 +282,33 @@
             <input type="submit" value="Search">
         </form>
     </div>
+    
     {% if wordcloud_filenames %}
-    <div class="wordcloud-box">
-        {% if wordcloud_filenames['www.pennlive.com'] %}
-        <img src="{{ url_for('static', filename=wordcloud_filenames['www.pennlive.com']) }}" alt="Word Cloud Pennlive">
+        {% if request.form.source == 'all' %}
+            <div class="wordcloud-box" style="display: flex; justify-content: space-between;">
+                {% if wordcloud_filenames['www.pennlive.com'] %}
+                <div style="width: 48%;">
+                    <h3 style="text-align: center;">Pennlive Wordcloud</h3>
+                    <img src="{{ url_for('static', filename=wordcloud_filenames['www.pennlive.com']) }}" alt="Word Cloud Pennlive" style="width: 100%;">
+                </div>
+                {% endif %}
+                {% if wordcloud_filenames['www.npr.org'] %}
+                <div style="width: 48%;">
+                    <h3 style="text-align: center;">NPR Wordcloud</h3>
+                    <img src="{{ url_for('static', filename=wordcloud_filenames['www.npr.org']) }}" alt="Word Cloud NPR" style="width: 100%;">
+                </div>
+                {% endif %}
+            </div>
+        {% else %}
+            <div class="wordcloud-box">
+                {% if wordcloud_filenames['www.pennlive.com'] %}
+                <img src="{{ url_for('static', filename=wordcloud_filenames['www.pennlive.com']) }}" alt="Word Cloud Pennlive">
+                {% endif %}
+                {% if wordcloud_filenames['www.npr.org'] %}
+                <img src="{{ url_for('static', filename=wordcloud_filenames['www.npr.org']) }}" alt="Word Cloud NPR">
+                {% endif %}
+            </div>
         {% endif %}
-        {% if wordcloud_filenames['www.npr.org'] %}
-        <img src="{{ url_for('static', filename=wordcloud_filenames['www.npr.org']) }}" alt="Word Cloud NPR">
-        {% endif %}
-    </div>
     {% endif %}
 
     {% if not news %}
