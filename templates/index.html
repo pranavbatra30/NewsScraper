@@ -279,9 +279,14 @@
             <input type="submit" value="Search">
         </form>
     </div>
-    {% if wordcloud_filename %}
+    {% if wordcloud_filenames %}
     <div class="wordcloud-box">
-        <img src="{{ url_for('static', filename=wordcloud_filename) }}" alt="Word Cloud">
+        {% if wordcloud_filenames['www.pennlive.com'] %}
+        <img src="{{ url_for('static', filename=wordcloud_filenames['www.pennlive.com']) }}" alt="Word Cloud Pennlive">
+        {% endif %}
+        {% if wordcloud_filenames['www.npr.org'] %}
+        <img src="{{ url_for('static', filename=wordcloud_filenames['www.npr.org']) }}" alt="Word Cloud NPR">
+        {% endif %}
     </div>
     {% endif %}
     {% if not news %}
