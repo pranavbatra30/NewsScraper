@@ -116,7 +116,7 @@ def index():
         wordcloud_filenames = {}
         
         # For each source, generate a word cloud
-        for source in ["www.pennlive.com", "www.npr.org"]:
+        for source in ["www.pennlive.com", "www.npr.org", "www.blackwallstreet-pa.com"]:
             # Extract keywords for this source
             source_keywords = ' '.join([item.keywords for item in related_news if item.source == source])
         
