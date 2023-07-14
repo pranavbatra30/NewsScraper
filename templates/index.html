@@ -288,14 +288,14 @@
             <div style="display: flex; justify-content: space-between;">
                 {% if wordcloud_filenames['www.pennlive.com'] %}
                 <div class="wordcloud-box" style="width: 48%;">
-                    <h3 style="text-align: center;">Pennlive Wordcloud</h3>
-                    <img src="{{ url_for('static', filename=wordcloud_filenames['www.pennlive.com']) }}" alt="Word Cloud Pennlive" style="width: 100%; height: auto;">
+                    <h3 style="text-align: center;">PennLive</h3>
+                    <img src="{{ url_for('static', filename=wordcloud_filenames['www.pennlive.com']) }}" alt="Word Cloud Pennlive" style="width: 100%; height: 500px;">
                 </div>
                 {% endif %}
                 {% if wordcloud_filenames['www.npr.org'] %}
                 <div class="wordcloud-box" style="width: 48%;">
-                    <h3 style="text-align: center;">NPR Wordcloud</h3>
-                    <img src="{{ url_for('static', filename=wordcloud_filenames['www.npr.org']) }}" alt="Word Cloud NPR" style="width: 100%; height: auto;">
+                    <h3 style="text-align: center;">NPR</h3>
+                    <img src="{{ url_for('static', filename=wordcloud_filenames['www.npr.org']) }}" alt="Word Cloud NPR" style="width: 100%; height: 500px;">
                 </div>
                 {% endif %}
             </div>
