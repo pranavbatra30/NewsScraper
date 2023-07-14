@@ -112,20 +112,30 @@ def index():
         # Pagination
         related_news = related_news[start:start+15]
 
-        # Combine keywords from all articles into a single string
-        all_keywords = ' '.join([item.keywords for item in related_news])
+        # Create a dictionary to hold the word cloud filenames
+        wordcloud_filenames = {}
+        
+        # For each source, generate a word cloud
+        for source in ["www.pennlive.com", "www.npr.org"]:
+            # Extract keywords for this source
+            source_keywords = ' '.join([item.keywords for item in related_news if item.source == source])
+        
+            # Generate a word cloud only if there is at least one keyword
+            if source_keywords.strip():
+                wordcloud = WordCloud(width = 900, height = 400,
+                            background_color ='#ffffff',
+                            stopwords = None,
+                            min_font_size = 10).generate(source_keywords)
+        
+                # Save the word cloud as an image in a static directory
+                wordcloud_filename = f'wordcloud_{source}.png'
+                wordcloud.to_file(f'static/{wordcloud_filename}')
+        
+                # Store the filename in the dictionary
+                wordcloud_filenames[source] = wordcloud_filename
+        
+        return render_template('index.html', news=related_news, has_more=has_more, wordcloud_filenames=wordcloud_filenames)
 
-        # Generate a word cloud only if there is at least one keyword
-        if all_keywords.strip():
-            wordcloud = WordCloud(width = 900, height = 400,
-                        background_color ='#ffffff',
-                        stopwords = None,
-                        min_font_size = 10).generate(all_keywords)
-            # Save the word cloud as an image in a static directory
-            wordcloud_filename = 'wordcloud.png'
-            wordcloud.to_file(f'static/{wordcloud_filename}')
-        else:
-            wordcloud_filename = None
 
         related_news = [item.as_dict() for item in related_news]
         return render_template('index.html', news=related_news, has_more=has_more, wordcloud_filename=wordcloud_filename)
