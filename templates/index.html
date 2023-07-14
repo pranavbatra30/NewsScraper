@@ -256,17 +256,6 @@
             text-decoration: none;
         }
 
-        .wordcloud-container {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            width: 100%;
-        }
-        
-        .wordcloud-image {
-            width: 49%;  /* Adjust as needed */
-            margin: 0;
-        }
 
         
 
@@ -294,18 +283,12 @@
         </form>
     </div>
     {% if wordcloud_filenames %}
-    <div class="wordcloud-container">
+    <div class="wordcloud-box">
         {% if wordcloud_filenames['www.pennlive.com'] %}
-        <div class="wordcloud-box">
-            <h3>Pennlive Wordcloud</h3>
-            <img class="wordcloud-image" src="{{ url_for('static', filename=wordcloud_filenames['www.pennlive.com']) }}" alt="Word Cloud Pennlive">
-        </div>
+        <img src="{{ url_for('static', filename=wordcloud_filenames['www.pennlive.com']) }}" alt="Word Cloud Pennlive">
         {% endif %}
         {% if wordcloud_filenames['www.npr.org'] %}
-        <div class="wordcloud-box">
-            <h3>NPR Wordcloud</h3>
-            <img class="wordcloud-image" src="{{ url_for('static', filename=wordcloud_filenames['www.npr.org']) }}" alt="Word Cloud NPR">
-        </div>
+        <img src="{{ url_for('static', filename=wordcloud_filenames['www.npr.org']) }}" alt="Word Cloud NPR">
         {% endif %}
     </div>
     {% endif %}
