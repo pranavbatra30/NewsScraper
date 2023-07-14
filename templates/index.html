@@ -287,15 +287,15 @@
         {% if request.form.source == 'all' %}
             <div class="wordcloud-box" style="display: flex; justify-content: space-between;">
                 {% if wordcloud_filenames['www.pennlive.com'] %}
-                <div style="width: 48%;">
+                <div style="width: 80%;">
                     <h3 style="text-align: center;">Pennlive Wordcloud</h3>
-                    <img src="{{ url_for('static', filename=wordcloud_filenames['www.pennlive.com']) }}" alt="Word Cloud Pennlive" style="width: 100%;">
+                    <img src="{{ url_for('static', filename=wordcloud_filenames['www.pennlive.com']) }}" alt="Word Cloud Pennlive" style="width: 100%; height: auto;">
                 </div>
                 {% endif %}
                 {% if wordcloud_filenames['www.npr.org'] %}
-                <div style="width: 48%;">
+                <div style="width: 80%;">
                     <h3 style="text-align: center;">NPR Wordcloud</h3>
-                    <img src="{{ url_for('static', filename=wordcloud_filenames['www.npr.org']) }}" alt="Word Cloud NPR" style="width: 100%;">
+                    <img src="{{ url_for('static', filename=wordcloud_filenames['www.npr.org']) }}" alt="Word Cloud NPR" style="width: 100%; height: auto;">
                 </div>
                 {% endif %}
             </div>
