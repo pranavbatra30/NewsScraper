@@ -134,7 +134,7 @@ def index():
                 # Store the filename in the dictionary
                 wordcloud_filenames[source] = wordcloud_filename
         
-        return render_template('index.html', news=related_news, has_more=has_more, wordcloud_filenames=wordcloud_filenames)
+        return render_template('index.html', news=related_news, has_more=has_more, wordcloud_filenames=wordcloud_filenames, source=source)
 
 
         related_news = [item.as_dict() for item in related_news]
