@@ -289,32 +289,41 @@
         </form>
     </div>
         {% if wordcloud_filenames %}
-        {% if request.form.source == 'all' %}
-            <div class="wordcloud-container" style="display: flex; justify-content: space-between;">
-                {% if wordcloud_filenames['www.pennlive.com'] %}
-                <div class="wordcloud-box" style="width: 49.5%;">
-                    <h3 style="text-align: center;">PennLive</h3>
-                    <img src="{{ url_for('static', filename=wordcloud_filenames['www.pennlive.com']) }}" alt="Word Cloud Pennlive" style="width: 100%; height: 300px;">
+            {% if request.form.source == 'all' %}
+                <div class="wordcloud-container" style="display: flex; justify-content: space-between;">
+                    {% if wordcloud_filenames['www.pennlive.com'] %}
+                    <div class="wordcloud-box" style="width: 49.5%;">
+                        <h3 style="text-align: center;">PennLive</h3>
+                        <img src="{{ url_for('static', filename=wordcloud_filenames['www.pennlive.com']) }}" alt="Word Cloud Pennlive" style="width: 100%; height: 300px;">
+                    </div>
+                    {% endif %}
+                    {% if wordcloud_filenames['www.npr.org'] %}
+                    <div class="wordcloud-box" style="width: 49.5%;">
+                        <h3 style="text-align: center;">NPR</h3>
+                        <img src="{{ url_for('static', filename=wordcloud_filenames['www.npr.org']) }}" alt="Word Cloud NPR" style="width: 100%; height: 300px;">
+                    </div>
+                    {% endif %}
+                    {% if wordcloud_filenames['www.blackwallstreet-pa.com'] %}
+                    <div class="wordcloud-box" style="width: 49.5%;">
+                        <h3 style="text-align: center;">Black Wall Street PA</h3>
+                        <img src="{{ url_for('static', filename=wordcloud_filenames['www.blackwallstreet-pa.com']) }}" alt="Word Cloud Black Wall Street PA" style="width: 100%; height: 300px;">
+                    </div>
+                    {% endif %}
                 </div>
-                {% endif %}
-                {% if wordcloud_filenames['www.npr.org'] %}
-                <div class="wordcloud-box" style="width: 49.5%;">
-                    <h3 style="text-align: center;">NPR</h3>
-                    <img src="{{ url_for('static', filename=wordcloud_filenames['www.npr.org']) }}" alt="Word Cloud NPR" style="width: 100%; height: 300px;">
+            {% else %}
+                <div class="wordcloud-box">
+                    {% if wordcloud_filenames['www.pennlive.com'] %}
+                    <img src="{{ url_for('static', filename=wordcloud_filenames['www.pennlive.com']) }}" alt="Word Cloud Pennlive">
+                    {% endif %}
+                    {% if wordcloud_filenames['www.npr.org'] %}
+                    <img src="{{ url_for('static', filename=wordcloud_filenames['www.npr.org']) }}" alt="Word Cloud NPR">
+                    {% endif %}
+                    {% if wordcloud_filenames['www.blackwallstreet-pa.com'] %}
+                    <img src="{{ url_for('static', filename=wordcloud_filenames['www.blackwallstreet-pa.com']) }}" alt="Word Cloud Black Wall Street PA">
+                    {% endif %}
                 </div>
-                {% endif %}
-            </div>
-        {% else %}
-            <div class="wordcloud-box">
-                {% if wordcloud_filenames['www.pennlive.com'] %}
-                <img src="{{ url_for('static', filename=wordcloud_filenames['www.pennlive.com']) }}" alt="Word Cloud Pennlive">
-                {% endif %}
-                {% if wordcloud_filenames['www.npr.org'] %}
-                <img src="{{ url_for('static', filename=wordcloud_filenames['www.npr.org']) }}" alt="Word Cloud NPR">
-                {% endif %}
-            </div>
+            {% endif %}
         {% endif %}
-    {% endif %}
 
     {% if not news %}
     {% if trending_news %}
