@@ -256,8 +256,10 @@
             text-decoration: none;
         }
 
-
-        
+        .wordcloud-container {
+            max-width: 1400px;
+            margin: auto;
+        }
 
     </style>
 </head>
@@ -285,7 +287,7 @@
     
     {% if wordcloud_filenames %}
         {% if request.form.source == 'all' %}
-            <div style="display: flex; justify-content: space-between;">
+            <div class="wordcloud-container" style="display: flex; justify-content: space-between;">
                 {% if wordcloud_filenames['www.pennlive.com'] %}
                 <div class="wordcloud-box" style="width: 49.5%;">
                     <h3 style="text-align: center;">PennLive</h3>
