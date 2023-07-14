@@ -267,24 +267,7 @@
 <div id="home-button-container">
     <a href="/"><div id="home-button">Home</div></a>
 </div>
-<div class="container">
-    <div class="header">
-        <h1>News Scraper</h1>
-    </div>
-    <div class="search-box">
-        <form method="POST">
-            <input type="text" name="keyword" placeholder="Enter a keyword..." required>
-            <input type="hidden" name="start" value="0">
-            <select name="source">
-                <option value="all">All</option>
-                <option value="www.blackwallstreet-pa.com">Black Wall Street PA</option>
-                <option value="www.pennlive.com">Penn Live</option>
-                <option value="www.npr.org">NPR News</option>
-            </select>
-            <input type="submit" value="Search">
-        </form>
-    </div>
-    
+
     {% if wordcloud_filenames %}
         {% if request.form.source == 'all' %}
             <div class="wordcloud-container" style="display: flex; justify-content: space-between;">
@@ -312,6 +295,27 @@
             </div>
         {% endif %}
     {% endif %}
+
+    
+<div class="container">
+    <div class="header">
+        <h1>News Scraper</h1>
+    </div>
+    <div class="search-box">
+        <form method="POST">
+            <input type="text" name="keyword" placeholder="Enter a keyword..." required>
+            <input type="hidden" name="start" value="0">
+            <select name="source">
+                <option value="all">All</option>
+                <option value="www.blackwallstreet-pa.com">Black Wall Street PA</option>
+                <option value="www.pennlive.com">Penn Live</option>
+                <option value="www.npr.org">NPR News</option>
+            </select>
+            <input type="submit" value="Search">
+        </form>
+    </div>
+    
+
 
     {% if not news %}
     {% if trending_news %}
